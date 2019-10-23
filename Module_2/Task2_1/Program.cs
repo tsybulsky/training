@@ -8,7 +8,7 @@ namespace Task2_1
         {
             Console.Write("Введите количество компаний: ");
             string inputValue = Console.ReadLine();
-            if ((!Int32.TryParse(inputValue, out int companiesCount))&&(companiesCount < 0))
+            if ((!Int32.TryParse(inputValue, out int companiesCount)) || (companiesCount < 0))
             {
                 Console.WriteLine("Введено неверное целое число");
                 Console.ReadKey();
