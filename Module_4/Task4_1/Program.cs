@@ -8,14 +8,15 @@ namespace Task4_1
 {
     class Program
     {
-        static void CreateAndFillArray(out int[] array, int size)
+        static int[] CreateAndFillArray(int size)
         {
-            array = new int[size];
+            var array = new int[size];
             var rand = new Random();
             for (var i = 0; i < size; i ++)
             {
                 array[i] = rand.Next(-100, 100);
             }
+            return array;
         }
 
         static int MaxOfArray(int[] array)
@@ -59,7 +60,7 @@ namespace Task4_1
             return MaxOfArray(array) - MinOfArray(array);
         }
 
-        static void MethodD(ref int[] array)
+        static void MethodD(int[] array)
         {
             int min = MinOfArray(array);
             int max = MaxOfArray(array);
@@ -82,7 +83,7 @@ namespace Task4_1
                 Console.ReadKey();
                 return;
             }         
-            CreateAndFillArray(out int[] data, Len);
+            int[] data = CreateAndFillArray(Len);
             Console.Write("Исходный массив: ");
             foreach(var item in data)
             {
@@ -93,7 +94,7 @@ namespace Task4_1
             Console.WriteLine($"Максимальный элемент массива {MaxOfArray(data)}");
             Console.WriteLine($"Сумма всех элементов массива {SumOfArray(data)}");
             Console.WriteLine($"Разность между максимальным и минимальным элементом массива {DiffMaxMin(data)}");
-            MethodD(ref data);
+            MethodD(data);
             Console.Write("Результирующий массив по пункту д) ");
             foreach (var item in data)
             {

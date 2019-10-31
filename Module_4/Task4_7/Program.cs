@@ -14,14 +14,14 @@ namespace Task4_7
             down
         };
 
-        static void Swap(ref int a, ref int b)
+        static void Swap(ref int var1, ref int var2)
         {
-            var temp = a;
-            a = b;
-            b = temp;
+            var temp = var1;
+            var1 = var2;
+            var2 = temp;
         }
 
-        static int PartitionUp(ref int[] array, int low, int high)
+        static int PartitionUp(int[] array, int low, int high)
         {
             var pivot = array[(low + high) / 2];
             int i = low, j = high;
@@ -38,7 +38,7 @@ namespace Task4_7
             return j;
         }
 
-        static int PartitionDown(ref int[] array, int low, int high)
+        static int PartitionDown(int[] array, int low, int high)
         {
             var pivot = array[(low + high) / 2];
             int i = low, j = high;
@@ -59,7 +59,7 @@ namespace Task4_7
         {
             if (low < high)
             {
-                var p = (direction == SortDirection.up)?PartitionUp(ref array, low, high):PartitionDown(ref array, low, high);
+                var p = (direction == SortDirection.up)?PartitionUp(array, low, high):PartitionDown(array, low, high);
                 QuickSort(array, low, p, direction);
                 QuickSort(array, p + 1, high, direction);
             }

@@ -48,8 +48,6 @@ namespace Task4_5
             {
                 if (month != 2)
                     return days[month-1];
-                // Учитывается тот факт, что года делящиеся на 100, но не делящиеся на 400
-                // не являются високосными
                 if ((year % 4 == 0) && ((year % 100 == 0)&&(year % 400 == 0)))
                     return 29;
                 else
@@ -114,6 +112,12 @@ namespace Task4_5
             if (!int.TryParse(values[0], out int month))
             {
                 Console.WriteLine("Месяц вводится числом");
+                Console.ReadKey();
+                return;
+            }
+            if ((month <= 0) || (month > 12))
+            {
+                Console.WriteLine("Месяц должен быть от 1 до 12");
                 Console.ReadKey();
                 return;
             }

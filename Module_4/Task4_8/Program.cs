@@ -10,26 +10,26 @@ namespace Task4_8
     {
         static double F(double x)
         {
-            return x * Math.Sin(x) - 5 * Math.Log10(Math.Abs(x));
+            return x * Math.Cos(x) - 5 * Math.Log10(Math.Abs(x));
         }
 
-        static bool Solve(double a, double b, out double x, ref int count)
+        static bool Solve(double lowBound, double highBound, out double x, ref int callCount)
         {
-            count++;
-            x = (a + b) / 2;
-            if (F(a) * F(b) > 0)
+            callCount++;
+            x = (lowBound + highBound) / 2;
+            if (F(lowBound) * F(highBound) > 0)
                 return false;
-            if (Math.Abs(a - b) > 0.0001)
+            if (Math.Abs(lowBound - highBound) > 0.0001)
             {
-                if (F(a) * F(x) < 0)
-                    b = x;
-                else if (F(b) * F(x) < 0)
-                    a = x;
+                if (F(lowBound) * F(x) < 0)
+                    highBound = x;
+                else if (F(highBound) * F(x) < 0)
+                    lowBound = x;
                 else
                 {
                     return true;
                 }
-                return Solve(a, b, out x, ref count);
+                return Solve(lowBound, highBound, out x, ref callCount);
             }
             else
                 return true;
@@ -37,10 +37,37 @@ namespace Task4_8
 
         static void Main()
         {
-            int iterationCount = 0;
-            if (Solve(0, 50, out double x, ref iterationCount))
+            Console.Write("Введите начало и конец отрезка поиска решения уравнения: ");
+            var inputValue = Console.ReadLine();
+            var values = inputValue.Split(' ');
+            if (values.Length < 2)
             {
-                Console.WriteLine($"Уравнение x*sin(x)-5*log10(|x|)=0 решено: x={x:F3} за {iterationCount} итераций");
+                Console.WriteLine("Надо ввести 2 числа");
+                Console.ReadKey();
+                return;
+            }
+            if (!double.TryParse(values[0], out double lowBound))
+            {
+                Console.WriteLine("Неверно указано число начала отрезка");
+                Console.ReadKey();
+                return;
+            }
+            if (!double.TryParse(values[1], out double highBound))
+            {
+                Console.WriteLine("Неверно указано число конца отрезка");
+                Console.ReadKey();
+                return;
+            }
+            if (lowBound > highBound)
+            {
+                Console.WriteLine("Начало отрезка находится левее его конца");
+                Console.ReadKey();
+                return;
+            }
+            int callCount = 0;
+            if (Solve(lowBound, highBound, out double x, ref callCount))
+            {
+                Console.WriteLine($"Уравнение x*sin(x)-5*lg(|x|)=0 решено за {callCount} вызовов: x={x:F3} ");
             }
             else
                 Console.WriteLine("Не удалось найти решение уравнения");
