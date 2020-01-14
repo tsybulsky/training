@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "shop.library", "shop.library\shop.library.csproj", "{FB53D148-F241-40CA-938B-F9482FAEC967}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop", "Shop\Shop.csproj", "{F4B92109-A8FC-42E2-85C8-E7FE4493542C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataChecks", "DataChecks\DataChecks.csproj", "{0A2D9F08-3F35-4455-AE6C-28109224663F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB53D148-F241-40CA-938B-F9482FAEC967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB53D148-F241-40CA-938B-F9482FAEC967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB53D148-F241-40CA-938B-F9482FAEC967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB53D148-F241-40CA-938B-F9482FAEC967}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4B92109-A8FC-42E2-85C8-E7FE4493542C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4B92109-A8FC-42E2-85C8-E7FE4493542C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4B92109-A8FC-42E2-85C8-E7FE4493542C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4B92109-A8FC-42E2-85C8-E7FE4493542C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A2D9F08-3F35-4455-AE6C-28109224663F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A2D9F08-3F35-4455-AE6C-28109224663F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A2D9F08-3F35-4455-AE6C-28109224663F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A2D9F08-3F35-4455-AE6C-28109224663F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C4A5469C-755B-4FE3-B904-C270D62399E0}
+	EndGlobalSection
+EndGlobal
