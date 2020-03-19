@@ -1,0 +1,33 @@
+﻿@model Notes.App.ViewModels.Home.IndexViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+}
+    
+    <div class="row">
+        @if ((HttpContext.Current.User != null) && (HttpContext.Current.User.Identity.IsAuthenticated))
+        {
+        <div class="col-md">
+            <span class="">Категории</span>
+            <div>
+                @foreach (var item in Model.Categories)
+                {
+                @Html.ActionLink(item.Name, "ByCategory", "Notes", item.Id)<br/>
+                }
+            </div>
+        </div>
+            <div class="col-md-10">Ура мы прошли аутенфикацию</div>            
+        }
+        else
+        {
+            <div class="col-md"></div>
+            <div class="col-md-10">
+                <p>Добро пожаловать в приложение "Записная книжка":)</p>
+                <p>Записная книжка - это система, которая предназначена для хранения личной информации.</p>
+                <p>Система позволяет создавать, просматривать, редактировать и удалять свои заметки.</p>
+                <p>Обладает функциями поиска и навигации.</p>
+                <p>Чтобы использовать это приложение Вам надо @Html.ActionLink("выполнить вход", "Login", "Account")</p>
+            </div>
+            <div class="col-md"></div>
+        }
+    </div>

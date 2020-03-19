@@ -1,0 +1,31 @@
+﻿@model Notes.App.ViewModels.Category.CategoryIndexViewModel
+
+@{
+    ViewBag.Title = "Категории";
+}
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <h2>Категории</h2>
+        <hr/>
+        <table class="table-bordered w-100">
+            <thead>
+                <tr>
+                    <th class="w-25">@Html.LabelFor(model => model.Categories.First().Id)</th>
+                    <th>@Html.LabelFor(model => model.Categories.First().Name)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model.Categories)
+                {
+                    <tr>
+                        <td>@category.Id</td>
+                        <td>@Html.ActionLink(category.Name, "Details", "Category", new { Id = category.Id })</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+</div>
