@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar">
+<!--                @Html.ActionLink("Notes App", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })-->
+                @if ((System.Web.HttpContext.Current.User != null) && (System.Web.HttpContext.Current.User.Identity.IsAuthenticated))
+                {
+                   <ul class="nav nav-tabs">
+                       <li class="active nav-link">@Html.ActionLink("Категории","Index","Category")</li> 
+                       <li class="nav-link">@Html.ActionLink("Заметки","Index","Note")</li>
+                       <li class="nav-link">@Html.ActionLink("Поиск","Index","Search")</li>
+                       <li class="nav-link">@Html.ActionLink("Пользователи","Index","Users")</li>
+                   </ul>
+                   <span>@Html.ActionLink(System.Web.HttpContext.Current.User.Identity.Name, "Details", "Account")</span>
+                }
+                else
+                {
+                    <div class="col-md-9"></div>
+                    <div class="col-md-3">
+                        <a href="/Account/Login">
+                            <button type="button">
+                                <span>Войти</span>
+                            </button>
+                        </a>
+                    </div>
+                }
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    @if ((System.Web.HttpContext.Current.User != null) && (System.Web.HttpContext.Current.User.Identity.IsAuthenticated))
+                    {
+                        @Html.ActionLink("Выйти", "Logout", "Account")                      
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Войти", "Login", "Account")</li>
+                    }                    
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - мое приложение ASP.NET</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

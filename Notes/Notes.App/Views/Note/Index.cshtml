@@ -1,0 +1,63 @@
+﻿@model Notes.App.ViewModels.Note.NoteIndexViewModel
+
+@{
+    ViewBag.Title = "Заметки. Записная книжка";
+}
+
+<h2>Заметки</h2>
+<div class="row h-100">
+    <div class="col-md-2 h-100">
+        <ul class="list-group">
+            @foreach (var item in Model.Categories)
+            {
+                <li class="list-group-item">@Html.ActionLink(@item.Name, "ByCategory", "Note", new { Id = @item.Id }, null) </li>             
+            }
+        </ul>
+    </div>
+    <div class="col-md-8 h-100" id="content">
+        @foreach (var item in Model.Notes)
+        {
+        <span>
+            <div class="card w-50">
+                <div class="card-header">
+                    @Html.ActionLink(item.Title, "Details", "Note", new { Id = item.Id },
+                        new { @class = "dlg", dialog_title = "Подробности" })
+                </div>
+                <div class="card-body">
+                    @item.Description
+                </div>
+            </div>
+        </span>
+        }
+    </div>
+    <div class="col-md-2 h-100">
+  @using (Html.BeginForm("Search", "Note", FormMethod.Post))
+  {
+      <label class="form-control-plaintext">Поиск</label>
+      <label>Искать по названию</label><br/>
+      <input type="radio" value="0" /><br/>
+      <input type="text" id="searchText"/><br/>            
+      <input type="submit" value="Найти" onclick="doSearch();"/>
+  }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.ajaxSetup({ cache: false });
+        alert("setup");
+        $(".dlg").on("click", function (e) {
+            e.preventDefault();
+            alert("funcion");
+            $("<div></div>")
+                .AddClass("dialog")
+                .appendTo(body)
+                .dialog({
+                    title: $(this).attr("data-dialog-title"),
+                    close: function () { $(this).remove() },
+                    modal: true
+                })
+                .load(this.href);
+        })
+    });
+</script>

@@ -1,0 +1,56 @@
+﻿@model Notes.BLL.DTOModels.LoggedUser
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Текущий пользователь</h2>
+
+<div>    
+    <div class="modal fade"></div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Role)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Role)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsAdmin)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsAdmin)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsEditor)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsEditor)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Сменить пароль", "ChangePassword") @Html.ActionLink("На главную", "Index", "Home")
+</p>
