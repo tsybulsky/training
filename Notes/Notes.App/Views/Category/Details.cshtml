@@ -1,7 +1,48 @@
-﻿@model Notes.BLL.DTOModels.CategoryDTO
-
-<h4>Категория</h4>
-<div>     
-    <p><span class="col-md-1">Id:</span><span> @Model.Id</span></p>
-    <p><span class="col-md-1">@Html.DisplayNameFor(model=>model.Name)</span><span>@Model.Name</span></p>
+﻿@model Notes.App.ViewModels.Category.CategoryDetailViewModel
+@using System
+<div id="categoryDetailsInfo">
+    <div class="row">   
+        <div class="col-md-2">Id:</div><div class="col-md-4">@Model.Id</div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">@Html.DisplayNameFor(model=>model.Name)</div>
+        <div class="col-md-4">@Model.Name</div>
+    </div>
+    <div class="row">
+        <h6>Заметки в категории</h6>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Владелец</th>
+                    <th>Актуален до</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Notes)
+            {
+                <tr>
+                <td>@Html.ActionLink(@item.Title, "Details", "Note", new { Id = item.Id }, new { @class = "details" })</td>
+                @if ((HttpContext.Current.User != null) && (HttpContext.Current.User.IsInRole("admin")))
+                {
+                <td>@Html.ActionLink(@item.Owner, "Edit", "User", new { Id = item.OwnerId }, null)</td>
+                }
+                else
+                {
+                    <td>@item.Owner</td>
+                }                
+                    @if (item.ActualTill != null)
+                    {
+                        <td>@item.ActualTill</td>
+                    }
+                    else
+                    {
+                        <td>&nbsp;</td>
+                    }
+                    
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 </div>

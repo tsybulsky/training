@@ -54,11 +54,8 @@
     <Reference Include="Ninject, Version=3.3.4.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.3.4\lib\net45\Ninject.dll</HintPath>
     </Reference>
-    <Reference Include="Ninject.Web.Common, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.Web.Common.3.3.0\lib\net45\Ninject.Web.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Ninject.Web.Common.WebHost, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.Web.Common.WebHost.3.3.0\lib\net45\Ninject.Web.Common.WebHost.dll</HintPath>
+    <Reference Include="Ninject.Web.Common, Version=3.3.2.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.Common.3.3.2\lib\net45\Ninject.Web.Common.dll</HintPath>
     </Reference>
     <Reference Include="Ninject.Web.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.MVC5.3.3.0\lib\net45\Ninject.Web.Mvc.dll</HintPath>
@@ -144,12 +141,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ImageForHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\Account\ChangePasswordModel.cs" />
     <Compile Include="ViewModels\Account\LoginViewModel.cs" />
+    <Compile Include="ViewModels\Category\CategoryDetailViewModel.cs" />
+    <Compile Include="ViewModels\Category\CategoryEditViewModel.cs" />
     <Compile Include="ViewModels\Category\CategoryIndexViewModel.cs" />
+    <Compile Include="ViewModels\Category\CategoryNoteViewModel.cs" />
+    <Compile Include="ViewModels\Common\ErrorViewModel.cs" />
     <Compile Include="ViewModels\Home\IndexViewModel.cs" />
+    <Compile Include="ViewModels\Note\NoteDetailViewModel.cs" />
+    <Compile Include="ViewModels\Note\NoteEditViewModel.cs" />
     <Compile Include="ViewModels\Note\NoteIndexViewModel.cs" />
+    <Compile Include="ViewModels\Note\NoteReferenceViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -165,6 +170,7 @@
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\details.js" />
     <Content Include="Scripts\esm\popper-utils.js" />
     <Content Include="Scripts\esm\popper-utils.min.js" />
     <Content Include="Scripts\esm\popper.js" />
@@ -185,12 +191,15 @@
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="PartialViews\Shared\Search.cshtml" />
+    <Content Include="PartialViews\Shared\PartialError.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -298,6 +307,11 @@
     <Content Include="Views\Category\Index.cshtml" />
     <Content Include="Views\Category\Details.cshtml" />
     <Content Include="Views\Note\Details.cshtml" />
+    <Content Include="Views\Category\Edit1.cshtml" />
+    <Content Include="Views\Category\Edit.cshtml" />
+    <Content Include="Views\Note\Edit.cshtml" />
+    <Content Include="Views\Note\Create.cshtml" />
+    <Content Include="Views\Category\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -312,6 +326,10 @@
     <ProjectReference Include="..\Notes.BLL\Notes.BLL.csproj">
       <Project>{c4a01280-876e-4b37-9222-184189626004}</Project>
       <Name>Notes.BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Notes.Common\Notes.Common.csproj">
+      <Project>{e1755682-c8c4-4b96-976f-cb97d0ed02db}</Project>
+      <Name>Notes.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Notes.DI\Notes.DI.csproj">
       <Project>{92ef45e5-0e30-4c53-bfc4-54fda853d922}</Project>

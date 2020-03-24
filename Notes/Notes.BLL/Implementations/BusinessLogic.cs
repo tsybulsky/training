@@ -13,16 +13,19 @@ namespace Notes.BLL
     public class BusinessLogic : IBusinessLogic
     {
         private readonly INotesDbContext _db;        
-        public BusinessLogic(INotesDbContext db, IUserService users, ICategoryService categories, INoteService notes)
+        public BusinessLogic(INotesDbContext db, IUserService users, ICategoryService categories, 
+            INoteService notes, INoteReferenceService noteReferences)
         {
             _db = db;
             Users = users;
             Categories = categories;
             Notes = notes;
+            NoteReferences = noteReferences;
         }
 
         public IUserService Users { get; }
         public INoteService Notes { get; }
         public ICategoryService Categories { get; }        
+        public INoteReferenceService NoteReferences { get; }
     }
 }

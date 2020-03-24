@@ -15,15 +15,15 @@ namespace Notes.BLL.Services
         {
             _db = db;
         }
-        public bool Create(CategoryDTO user)
+        public bool Create(CategoryDTO category)
         {
-            if (user != null)
+            if (category != null)
             {
                 try
                 {
                     IMapper mapper = new MapperConfiguration(c => c.CreateMap<CategoryDTO, Category>()).CreateMapper();
-                    Category category = mapper.Map<CategoryDTO, Category>(user);
-                    _db.Categories.Save(category);
+                    Category categoryEntity = mapper.Map<CategoryDTO, Category>(category);
+                    _db.Categories.Save(categoryEntity);
                     return true;
                 }
                 catch (NoteCustomException)

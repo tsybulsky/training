@@ -67,15 +67,18 @@
     <Compile Include="DTOModels\CategoryDTO.cs" />
     <Compile Include="DTOModels\LoggedUser.cs" />
     <Compile Include="DTOModels\NoteDTO.cs" />
+    <Compile Include="DTOModels\NoteReferenceDTO.cs" />
     <Compile Include="DTOModels\UserDTO.cs" />
     <Compile Include="Implementations\BusinessLogic.cs" />
     <Compile Include="Implementations\UserPrinciple.cs" />
     <Compile Include="Interfaces\IBusinessLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="services\implementations\CategoryService.cs" />
+    <Compile Include="services\implementations\NoteReferenceService.cs" />
     <Compile Include="services\implementations\NoteService.cs" />
     <Compile Include="services\implementations\UserService.cs" />
     <Compile Include="services\interfaces\ICategoryService.cs" />
+    <Compile Include="services\interfaces\INoteReferenceService.cs" />
     <Compile Include="services\interfaces\INoteService.cs" />
     <Compile Include="services\interfaces\IUserService.cs" />
   </ItemGroup>

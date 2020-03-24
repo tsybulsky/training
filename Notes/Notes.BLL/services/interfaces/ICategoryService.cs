@@ -9,7 +9,7 @@ namespace Notes.BLL.Services
         
         CategoryDTO GetItemById(int id);
         bool Delete(int id);
-        bool Update(CategoryDTO user);
-        bool Create(CategoryDTO user);
+        bool Update(CategoryDTO category);
+        bool Create(CategoryDTO category);
     }
 }

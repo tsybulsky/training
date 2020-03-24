@@ -55,8 +55,8 @@ namespace Notes.BLL.Services
                 User userEntity = _db.Users.GetItemById(id);
                 if (userEntity == null)
                     throw new NoteNotFoundException("User not found");
-                IMapper mapper = new MapperConfiguration(c => c.CreateMap<UserDTO, User>()).CreateMapper();
-                UserDTO user = mapper.Map<UserDTO>(userEntity);
+                IMapper mapper = new MapperConfiguration(c => c.CreateMap<User, UserDTO>()).CreateMapper();
+                UserDTO user = mapper.Map<User,UserDTO>(userEntity);
                 Role role = _db.Roles.GetItemById(user.RoleId);
                 if (role != null)
                 {

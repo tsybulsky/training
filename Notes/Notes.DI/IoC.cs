@@ -17,8 +17,7 @@ namespace Notes.DI
             Bind<IUserService>().To<UserService>();
             Bind<INoteService>().To<NoteService>();
             Bind<ICategoryService>().To<CategoryService > ();
-            
-           // AddSingleton(new MapperConfiguration(mc => mc.AddProfile(new AutoMapperProfile())).CreateMapper());
+            Bind<INoteReferenceService>().To<NoteReferenceService>();
         }
     }
 }

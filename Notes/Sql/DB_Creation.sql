@@ -1,8 +1,12 @@
 USE master
 GO
 
-IF EXISTS(SELECT * FROM sys.sysdatabases WHERE name = 'Notes') 
-  DROP DATABASE Notes
+IF EXISTS(SELECT * FROM sys.sysdatabases WHERE name = 'Notes')
+  BEGIN
+    EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'Notes'
+    ALTER DATABASE Notes SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+    DROP DATABASE Notes
+  END
 GO
 
 CREATE DATABASE Notes ON  ( 
@@ -160,7 +164,11 @@ GO
 
 CREATE VIEW dbo.GetNoteReferences
 AS
-  SELECT * FROM dbo.NoteReferences
+  SELECT 
+	A.*, b.Title as ReferenceTitle 
+  FROM 
+    dbo.NoteReferences A 
+	  INNER JOIN dbo.Notes B ON A.ReferenceId = b.Id
 GO
 
 CREATE PROCEDURE dbo.SaveRole
@@ -285,14 +293,14 @@ GO
 
 CREATE PROCEDURE dbo.SaveCategory
   @Id int OUTPUT,
-  @Title nvarchar(1000)
+  @Name nvarchar(1000)
 AS
   BEGIN
     DECLARE @Result int
 	IF EXISTS(SELECT * FROM dbo.Categories WHERE Id = @Id)
 	  BEGIN
 	    UPDATE dbo.Categories SET
-		  Name = @Title 
+		  Name = @Name 
 		WHERE
 		  Id = @Id
 		SET @Result = @@ROWCOUNT
@@ -302,7 +310,7 @@ AS
 	    INSERT INTO dbo.Categories (
 		  Name)
 		VALUES (
-		  @Title)
+		  @Name)
 		SELECT @Result = @@ROWCOUNT, @Id = SCOPE_IDENTITY()
 	  END
     RETURN @Result

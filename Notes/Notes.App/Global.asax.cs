@@ -24,6 +24,7 @@ namespace Notes.App
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             NinjectModule registrations = new NinjectRegistrations();
             var kernel = new StandardKernel(registrations);
+            kernel.Unbind<ModelValidatorProvider>();
             DependencyResolver.SetResolver(new NinjectDependencyResolver(kernel));
         }
 

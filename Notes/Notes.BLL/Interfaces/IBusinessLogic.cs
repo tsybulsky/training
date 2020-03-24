@@ -15,6 +15,7 @@ namespace Notes.BLL
         IUserService Users { get; }
         INoteService Notes { get; }
         ICategoryService Categories { get; }
+        INoteReferenceService NoteReferences { get; }
         
     }
 }

@@ -11,6 +11,7 @@ namespace Notes.DAL.DbContext
         public RoleRepository Roles { get; set; }
         public CategoryRepository Categories { get; set; }
         public NoteRepository Notes { get; set; }
+        public NoteReferenceRepository NoteReferences { get; set; }
 
         public NotesDbContext(string connectionString)
         {
@@ -18,7 +19,8 @@ namespace Notes.DAL.DbContext
             Users = new UserRepository(db);
             Roles = new RoleRepository(db);
             Categories = new CategoryRepository(db);
-            Notes = new NoteRepository(db);            
+            Notes = new NoteRepository(db);
+            NoteReferences = new NoteReferenceRepository(db);
         }
     }
 }

@@ -154,6 +154,9 @@ namespace Notes.DAL.Repositories.Implementations
                     command.CommandType = CommandType.StoredProcedure;
                     command.CommandText = _saveProcedureName;
                     MapToParameters(item, command.Parameters);
+                    int result = command.ExecuteNonQuery();
+                    if (result != 1)
+                        throw new NoteCustomException("Ошибка сохранения данных");
                 }
             }
             catch (Exception e)

@@ -39,9 +39,13 @@ namespace Notes.DAL.Repositories.Implementations
                         note.ActualTill = null;
                     else
                         note.ActualTill = reader.GetDateTime(actualTillIndex);
-                    note.Image = new byte[0];
+                    if (!(reader[imageFieldIndex] is DBNull))
+                    {
+                        long fieldSize = reader.GetBytes(imageFieldIndex, 0, null, 0, 0);
+                        note.Image = new byte[fieldSize];
+                        reader.GetBytes(imageFieldIndex, 0, note.Image, 0, (int)fieldSize);
+                    }
                     return note;
-
                 }
                 catch (Exception e)
                 {

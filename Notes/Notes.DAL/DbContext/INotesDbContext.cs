@@ -8,5 +8,6 @@ namespace Notes.DAL.DbContext
         RoleRepository Roles { get; set; }
         CategoryRepository Categories { get; set; }
         NoteRepository Notes { get; set; }        
+        NoteReferenceRepository NoteReferences { get; set; }
     }
 }
