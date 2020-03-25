@@ -33,6 +33,10 @@
         </table>
     </div>
     <div id="page2">
+        <div class="row">
+            <div class="btn"><a href="@Url.Action("CreateReference","Note")"><img src="@Url.Content("~/Content/images/add32.png")" /> Создать</a></div>
+            <div class="btn"><a href="@Url.Action("DeleteReference","Note")"><img src="@Url.Content("~/Content/images/delete32.png")"/> Удалить</a></div>
+        </div>
         <ul>
             @foreach (var link in @Model.References)
             {

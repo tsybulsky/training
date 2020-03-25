@@ -1,15 +1,26 @@
 ﻿@model Notes.App.ViewModels.Category.CategoryDetailViewModel
 @using System
-<div id="categoryDetailsInfo">
-    <div class="row">   
-        <div class="col-md-2">Id:</div><div class="col-md-4">@Model.Id</div>
+@using Notes.BLL
+
+<div id="tabpanel">
+    <ul>
+        <li><a href="#page1">Основные</a></li>
+        <li><a href="#page2">Заметки</a></li>
+    </ul>
+</div>
+<div id="page1">
+    <div>
+        <div class="row">
+            <div class="col-md-2">Id:</div><div class="col-md-4">@Model.Id</div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">@Html.DisplayNameFor(model => model.Name)</div>
+            <div class="col-md-4">@Model.Name</div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-md-2">@Html.DisplayNameFor(model=>model.Name)</div>
-        <div class="col-md-4">@Model.Name</div>
-    </div>
-    <div class="row">
-        <h6>Заметки в категории</h6>
+</div>
+<div id="page2">
+    <div class="row" id="categoryNotes">
         <table class="table">
             <thead>
                 <tr>
@@ -19,30 +30,25 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Notes)
-            {
-                <tr>
-                <td>@Html.ActionLink(@item.Title, "Details", "Note", new { Id = item.Id }, new { @class = "details" })</td>
-                @if ((HttpContext.Current.User != null) && (HttpContext.Current.User.IsInRole("admin")))
+                @foreach (var item in Model.Notes)
                 {
-                <td>@Html.ActionLink(@item.Owner, "Edit", "User", new { Id = item.OwnerId }, null)</td>
+                    <tr>
+                        <td>@Html.ActionLink(@item.Title, "Details", "Note", new { Id = item.Id }, new { @class = "details" })</td>
+                        @if (HttpContext.Current.User.IsInRole(UserPrinciple.ADMIN_ROLE_NAME))
+                        {
+                            <td>@Html.ActionLink(@item.Owner, "Edit", "User", new { Id = item.OwnerId }, null)</td>
+                        }
+                        else
+                        {
+                            <td>@item.Owner</td>
+                        }
+                        <td>item=>item.ActulTill</td>                        
+                    </tr>
                 }
-                else
-                {
-                    <td>@item.Owner</td>
-                }                
-                    @if (item.ActualTill != null)
-                    {
-                        <td>@item.ActualTill</td>
-                    }
-                    else
-                    {
-                        <td>&nbsp;</td>
-                    }
-                    
-                </tr>
-            }
             </tbody>
         </table>
     </div>
 </div>
+<script>
+
+</script>

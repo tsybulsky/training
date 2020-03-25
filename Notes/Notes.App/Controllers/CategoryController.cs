@@ -17,7 +17,8 @@ namespace Notes.App.Controllers
         {
             _bl = bl;
         }
-        // GET: Category
+        
+        [Authorize]
         public ActionResult Index()
         {
             CategoryIndexViewModel model = new CategoryIndexViewModel();
@@ -57,11 +58,11 @@ namespace Notes.App.Controllers
                         if (++counter > 9)
                             break;
                     }
-                    return PartialView("Details", model);
+                    return PartialView(model);
                 }
                 else
                 {
-                    return View("Index");
+                    return PartialView();
                 }
             }
             catch (NoteCustomException e)
@@ -72,28 +73,34 @@ namespace Notes.App.Controllers
 
         public ActionResult Create()
         {
-            return View();
+            return PartialView();
         }
 
         [HttpPost]
-        public ActionResult Create(CategoryEditViewModel model)
+        public ActionResult DoCreate(string name)
         {
-            if ((model != null) & (ModelState.IsValid))
+            JsonResult result = new JsonResult();
+            if (!String.IsNullOrWhiteSpace(name))
             {
                 try
                 {
-                    CategoryDTO category = new CategoryDTO() { Name = model.Name };
+                    CategoryDTO category = new CategoryDTO() { Name = name };
                     _bl.Categories.Create(category);
-                    return RedirectToAction(nameof(Index));
+                    result.Data = new { Code = 0, Message = "OK" };
+
+                }
+                catch (NoteCustomException e)
+                {
+                    result.Data = new { Code = -1, Message = e.Message, Source = e.GetType().Name };
                 }
                 catch (Exception e)
                 {
-                    return View("error", new ErrorViewModel(e.Message));
+                    result.Data = new { Code = -2, Message = e.Message };
                 }
             }
             else
-                return View("Error", new ErrorViewModel("Неверные параметры"));
-
+                result.Data = new { Code = 3, Message = "Неверные значения параметров" };
+            return result;
         }
         public ActionResult Edit(int id)
         {
@@ -137,22 +144,24 @@ namespace Notes.App.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         public ActionResult Delete(int id)
         {
+            JsonResult result = new JsonResult();
             try
             {
-                _bl.Categories.Delete(id);                
+                _bl.Categories.Delete(id);
+                result.Data = new { Code = 0, Message = "OK" };
             }
             catch (NoteCustomException e)
             {
-                ModelState.AddModelError("error", e.Message);
+                result.Data = new { Code = -1, Message = e.Message };
             }
             catch (Exception e)
             {
-                return new HttpStatusCodeResult(200,e.Message);
+                result.Data = new { Code = -2, Message = e.Message };
             }
-            return RedirectToAction(nameof(Index));
+            return result;
         }
 
         private CategoryDTO MapCategoryViewModelToCategoryDTO(CategoryEditViewModel model)

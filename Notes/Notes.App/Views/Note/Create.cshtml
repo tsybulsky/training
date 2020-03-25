@@ -1,6 +1,6 @@
 ﻿@model Notes.App.ViewModels.Note.NoteEditViewModel
 
-<form action="/Note/Create" method="post" novalidate id="editform">
+<form action="/Note/Create" method="post" novalidate id="createNoteForm" enctype="multipart/form-data">
     @Html.AntiForgeryToken()    
     <div class="form-horizontal">        
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -26,7 +26,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.CreationDate, htmlAttributes: new { @class = "control-label col-md-6" })
             @Html.LabelFor(model => model.ActualTill, htmlAttributes: new { @class = "control-label col-md-6" })
-            <input typeof="date" name="CreationDate" value="@Model.CreationDate" class="form-control col-md-6" />
+            <input type="date" name="CreationDate" value="@Model.CreationDate" class="form-control col-md-6" 
+                   data-val="true" data-val-required="Обязательное поле" />
             <input type="date" name="ActualTill" value="@Model.ActualTill" class="form-control col-md-6"/>
         </div>
         <input type="hidden" name="OwnerId" value="@Model.OwnerId" />
@@ -34,11 +35,13 @@
             @Html.LabelFor(model => model.Owner, htmlAttributes: new { @class = "control-label col-md-2" })
             <input type="text" name="Owner" readonly value="@Model.Owner" class="form-control col-md-12" />
         </div>
+        <label for="image">Картинка</label><br/>
+        <input type="file" name="uploadedFile" accept="image/jpeg,image/png,image/gif"/>
     </div>
     <div class="form-group">
         <input type="submit" value="Сохранить"/>
     </div>
 </form>
     <script>
-    $.validator.unobtrusive.parse('#editform');
+    $.validator.unobtrusive.parse('#createNoteForm');
 </script>

@@ -106,8 +106,9 @@ namespace Notes.App.Controllers
                 return PartialView("Error", new ErrorViewModel(e.Message));
             }
         }
+        
         [HttpPost]
-        public ActionResult Create(NoteEditViewModel model, HttpPostedFileBase image)
+        public ActionResult Create(NoteEditViewModel model, HttpPostedFileBase uploadedFile)
         {
             if (ModelState.IsValid)
             {
@@ -115,15 +116,19 @@ namespace Notes.App.Controllers
                 {
                     IMapper mapper = new MapperConfiguration(c => c.CreateMap<NoteEditViewModel, NoteDTO>()).CreateMapper();
                     NoteDTO note = mapper.Map<NoteEditViewModel, NoteDTO>(model);
-                    if (image != null)
+                    if (uploadedFile != null)
                     {
-                        using (BinaryReader reader = new BinaryReader(image.InputStream))
+                        using (BinaryReader reader = new BinaryReader(uploadedFile.InputStream))
                         {
-                            note.Image = reader.ReadBytes(image.ContentLength);
+                            note.Image = reader.ReadBytes(uploadedFile.ContentLength);
                         }
+                        note.PictureMimeType = uploadedFile.ContentType;
                     }
                     else
+                    {
                         note.Image = null;
+                        note.PictureMimeType = null;
+                    }
                     _bl.Notes.Create(note);
                     return RedirectToAction(nameof(Index));
                 }
@@ -200,6 +205,24 @@ namespace Notes.App.Controllers
             }
             else
                 return PartialView(model);
+        }
+
+        public ActionResult Delete(int id, int? page)
+        {
+            if (id > 0)
+            {
+                try
+                {
+                    _bl.Notes.Delete(id);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    return View("Error", new ErrorViewModel(e.Message));
+                }
+            }
+            else
+                return View("Error", new ErrorViewModel("Неверные параметры вызова"));
         }
     }
 }

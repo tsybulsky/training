@@ -34,5 +34,6 @@ namespace Notes.App.ViewModels.Note
         [Display(Name="Актуальна до")]
         public DateTime? ActualTill { get; set; }        
         public byte[] Image { get; set; }
+        public string PictureMimeType { get; set; }
     }
 }

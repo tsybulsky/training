@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Notes.App.ViewModels.Account;
-using Notes.BLL.DTOModels;
+﻿using Notes.App.ViewModels.Account;
 using Notes.BLL;
+using Notes.BLL.DTOModels;
+using System.Web.Mvc;
+using System;
+using Notes.Common.Exceptions;
 
 namespace Notes.App.Controllers
 {
@@ -22,37 +20,53 @@ namespace Notes.App.Controllers
             return View();
         }
 
-        public ActionResult Login()
+        public ActionResult Login(string returnUrl)
         {
+            if (!String.IsNullOrWhiteSpace(returnUrl))
+                ViewData["returnUrl"] = returnUrl;
+            else
+                ViewData["returnUrl"] = "";
             return View();
         }
 
-        [HttpPost]
-        public ActionResult Login(LoginViewModel model)
+        [HttpPost]       
+        public ActionResult DoLogin(string username, string password)
         {
-            if (model != null)
+            JsonResult result = new JsonResult();
+            if ((!String.IsNullOrWhiteSpace(username))&&
+                (!String.IsNullOrEmpty(password)))
             {
-                if (ModelState.IsValid)
+                if (_bl.Users.Login(username, password) != null)
                 {
-                    if (_bl.Users.Login(model.UserName, model.Password) != null)
-                    {
-                        return Redirect("~/Home/Index");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Error", "Invalid user name or password");                        
-                    }
+                    result.Data = new { Code = 0, Message = "OK" };
                 }
                 else
-                    ModelState.AddModelError("Error", "Something wrong");
+                {
+                    result.Data = new { Code = -3, Message = "Неверное имя пользователя или пароль" };
+                }
             }
-            return View();
+            else
+                result.Data = new { Code = -1, Message = "Неверные параметры вызова" };
+            return result;
         }
-
+        [HttpPost]
         public ActionResult Logout()
         {
-            _bl.Users.Logout();
-            return View();
+            JsonResult result = new JsonResult();
+            try
+            {
+                _bl.Users.Logout();
+                result.Data = new { Code = 0, Message = "OK" };
+            }
+            catch (NoteCustomException e)
+            {
+                result.Data = new { Code = -1, Message = e.Message };
+            }
+            catch (Exception e)
+            {
+                result.Data = new { Code = -2, Message = e.Message };
+            }
+            return result;
         }
 
         public ActionResult Details()

@@ -40,7 +40,8 @@ namespace Notes.App
                     Id = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
-                    Role = user.Role
+                    IsAdmin = user.IsAdmin,
+                    IsEditor = user.IsEditor
                 };
                 HttpContext.Current.User = userPrincipal;
             }

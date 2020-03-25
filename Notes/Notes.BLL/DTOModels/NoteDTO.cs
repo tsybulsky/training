@@ -16,5 +16,6 @@ namespace Notes.BLL.DTOModels
         public DateTime? ActualTill { get; set; }
         public string Owner { get; set; }
         public byte[] Image { get; set; }
+        public string PictureMimeType { get; set; }
     }
 }

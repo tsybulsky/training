@@ -145,6 +145,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\Account\ChangePasswordModel.cs" />
     <Compile Include="ViewModels\Account\LoginViewModel.cs" />
+    <Compile Include="ViewModels\Category\CategoryCreateViewModel.cs" />
     <Compile Include="ViewModels\Category\CategoryDetailViewModel.cs" />
     <Compile Include="ViewModels\Category\CategoryEditViewModel.cs" />
     <Compile Include="ViewModels\Category\CategoryIndexViewModel.cs" />
@@ -307,7 +308,6 @@
     <Content Include="Views\Category\Index.cshtml" />
     <Content Include="Views\Category\Details.cshtml" />
     <Content Include="Views\Note\Details.cshtml" />
-    <Content Include="Views\Category\Edit1.cshtml" />
     <Content Include="Views\Category\Edit.cshtml" />
     <Content Include="Views\Note\Edit.cshtml" />
     <Content Include="Views\Note\Create.cshtml" />
@@ -315,7 +315,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

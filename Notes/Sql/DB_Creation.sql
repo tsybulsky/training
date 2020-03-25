@@ -53,7 +53,7 @@ INSERT INTO dbo.Roles (
 VALUES (
   1, 'Администраторы', 1, 1), (
   2, 'Редакторы', 0, 1), (
-  3, 'Рядовые пользователи', 0, 0)
+  3, 'Пользователи', 0, 0)
 GO
 
 SET IDENTITY_INSERT dbo.Roles OFF
@@ -110,7 +110,8 @@ CREATE TABLE dbo.Notes (
     CONSTRAINT FK_Notes_CategoryId FOREIGN KEY (CategoryId) REFERENCES dbo.Categories(Id),
   OwnerId int NOT NULL
     CONSTRAINT FK_Notes_OwnerId FOREIGN KEY (OwnerId) REFERENCES dbo.Users(Id),
-  Picture varbinary(max) NULL)
+  Picture varbinary(max) NULL,
+  PictureMimeType nvarchar(100) NULL)
 GO
 
 DENY SELECT, INSERT, UPDATE, DELETE ON dbo.Categories TO Public
@@ -347,7 +348,8 @@ CREATE PROCEDURE dbo.SaveNote
   @Description nvarchar(max),
   @CategoryId int,
   @OwnerId int,
-  @Picture varbinary(max)
+  @Picture varbinary(max),
+  @PictureMimeType varchar(100)
 AS
   BEGIN
     DECLARE @Result int
@@ -355,7 +357,7 @@ AS
 	  BEGIN
 	    UPDATE dbo.Notes SET 
 		  Title = @Title, Description = @Description, CategoryId = @CategoryId,
-		  OwnerId = @OwnerId, Picture = @Picture
+		  OwnerId = @OwnerId, Picture = @Picture, PictureMimeType = @PictureMimeType
 		WHERE
 		  Id  = @Id
 		SET @Result = @@ROWCOUNT
@@ -364,10 +366,12 @@ AS
 	  BEGIN
 	    INSERT INTO dbo.Notes (
 		  Title, Description, CategoryId,
-		  OwnerId, Picture, CreationDate)
+		  OwnerId, Picture, PictureMimeType,
+		  CreationDate)
 		VALUES (
 		  @Title, @Description, @CategoryId,
-		  @OwnerId, @Picture, GETDATE())
+		  @OwnerId, @Picture, @PictureMimeType,
+		  GETDATE())
 		SELECT @Result = @@ROWCOUNT, @Id = SCOPE_IDENTITY()
 	  END
 	RETURN @Result 

@@ -1,13 +1,8 @@
 ﻿@model Notes.App.ViewModels.Category.CategoryEditViewModel
 
-@using (Html.BeginForm())
-{
+<form action="@Url.Action("Edit","Category")" method="post" id="editCategoryForm" novalidate class="dl-horizontal">
     @Html.AntiForgeryToken()
     <div class="form-horizontal">
-        @if (!String.IsNullOrWhiteSpace(Model.Error))
-        {
-            <div class="text-danger">@Model.Error</div>
-        }
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
         <div class="form-group">
@@ -17,10 +12,10 @@
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
         </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Сохранить" class="btn btn-default" />
-            </div>
-        </div>
+        <div id="save-error"></div>
     </div>
-}
+</form>
+
+<script>
+    $.validator.unobtrusive.parse('#editCategoryForm');
+</script>

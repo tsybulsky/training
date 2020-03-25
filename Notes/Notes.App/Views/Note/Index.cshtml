@@ -28,7 +28,8 @@
                 <div class="card-body">
                     @item.Description
                 </div>
-                @if ((HttpContext.Current.User != null)&&(HttpContext.Current.User.IsInRole("admin") || HttpContext.Current.User.IsInRole("editor") ||
+                @if ((HttpContext.Current.User != null)&&(HttpContext.Current.User as UserPrinciple != null)&&
+                    (HttpContext.Current.User.IsInRole("admin") || HttpContext.Current.User.IsInRole("editor") ||
                     (((UserPrinciple)(HttpContext.Current.User)).Id == item.OwnerId)))
                 {
                     <div class="btn-toolbar">
@@ -58,6 +59,6 @@
         $(".details").on("click", showNoteDetails)
         $(".createlink").on("click", createNote);
         $(".editlink").on("click", editNote);
-        $(".deletellink").on("click", deleteNote);
+        $(".deletelink").on("click", deleteNote);
     });
 </script>

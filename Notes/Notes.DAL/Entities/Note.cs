@@ -14,5 +14,6 @@ namespace Notes.DAL.Entities
         public DateTime? ActualTill { get; set; }
         public int OwnerId { get; set; }
         public byte[] Image { get; set; }
+        public string PictureMimeType { get; set; }
     }
 }
