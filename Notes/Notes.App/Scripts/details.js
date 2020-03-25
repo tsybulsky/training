@@ -106,6 +106,7 @@ function createCategory(e) {
 
 function showCategoryDetails(e) {
     e.preventDefault();
+    var catId = $(this).attr("catId");
     var dlg = $("<div></div>")
         .addClass("dialog")
         .appendTo("body")
@@ -126,7 +127,7 @@ function showCategoryDetails(e) {
                     }
                 ]
         })
-        .load(this.href, function (response, status, xhr) {
+        .load(this.href+'/'+catId, function (response, status, xhr) {
             if (status == "error")
                 $(this).html("Error: " + response);
             else {
