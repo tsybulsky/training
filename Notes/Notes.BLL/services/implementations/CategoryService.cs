@@ -15,7 +15,7 @@ namespace Notes.BLL.Services
         {
             _db = db;
         }
-        public bool Create(CategoryDTO category)
+        public void Create(CategoryDTO category)
         {
             if (category != null)
             {
@@ -24,7 +24,6 @@ namespace Notes.BLL.Services
                     IMapper mapper = new MapperConfiguration(c => c.CreateMap<CategoryDTO, Category>()).CreateMapper();
                     Category categoryEntity = mapper.Map<CategoryDTO, Category>(category);
                     _db.Categories.Save(categoryEntity);
-                    return true;
                 }
                 catch (NoteCustomException)
                 {
@@ -37,18 +36,17 @@ namespace Notes.BLL.Services
             }
             else
             {
-                throw new NoteArgumentException("Неверные параметры вызова");
+                throw new NoteArgumentException();
             }
         }
 
-        public bool Delete(int id)
+        public void Delete(int id)
         {
             if (id >= 0)
             {
                 try
                 {
                     _db.Categories.Delete(id);
-                    return true;
                 }
                 catch (NoteCustomException)
                 {
@@ -60,7 +58,7 @@ namespace Notes.BLL.Services
                 }
             }
             else
-                return false;
+                throw new NoteArgumentException();
         }
 
         public CategoryDTO GetItemById(int id)
@@ -88,7 +86,7 @@ namespace Notes.BLL.Services
                 }
             }
             else
-                throw new NoteArgumentException("Неверные параметры вызова");
+                throw new NoteArgumentException();
         }
 
         public IEnumerable<CategoryDTO> GetList()
@@ -109,7 +107,7 @@ namespace Notes.BLL.Services
             }
         }
 
-        public bool Update(CategoryDTO category)
+        public void Update(CategoryDTO category)
         {
             if (category != null)
             {
@@ -118,7 +116,6 @@ namespace Notes.BLL.Services
                     IMapper mapper = new MapperConfiguration(c => c.CreateMap<CategoryDTO, Category>()).CreateMapper();
                     Category categoryDb = mapper.Map<CategoryDTO, Category>(category);
                     _db.Categories.Save(categoryDb);
-                    return true;
                 }
                 catch (NoteCustomException)
                 {
@@ -131,7 +128,7 @@ namespace Notes.BLL.Services
             }
             else
             {
-                throw new NoteArgumentException("Неверное значение параметра");
+                throw new NoteArgumentException();
             }
         }
     }

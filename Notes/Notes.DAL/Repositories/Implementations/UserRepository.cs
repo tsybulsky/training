@@ -19,22 +19,44 @@ namespace Notes.DAL.Repositories.Implementations
             _deleteProcedureName = "dbo.DeleteUser";
         }
 
+        private void UpdateLoginTime(int userId)
+        {
+            try
+            {
+                using (IDbCommand command = _db.CreateCommand())
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandText = "dbo.UpdateLoginTime";
+                    command.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = userId });
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new NoteDataException("Ошибка обновления данных пользователя\r\n"+e.Message);
+            }
+        }
+
         public User Validate(string login, string password)
         {
             string hash = PasswordHash.HashString(password);
             IDbCommand command = _db.CreateCommand();
-            command.CommandText = $"SELECT * FROM dbo.GetUsers WHERE (UserName = '{login}')and(password = '{hash}')";
+            command.CommandText = $"SELECT * FROM dbo.GetUsers WHERE (Login = '{login}')and(password = '{hash}')";
+            User user;
             using (IDataReader reader = command.ExecuteReader())
             {
                 if (reader.Read())
                 {
-                    return MapFromReader(reader);
+                    user = MapFromReader(reader);
+
                 }
                 else
                 {
                     return null;
                 }
             }
+            UpdateLoginTime(user.Id);
+            return user;
         }
 
         protected override User MapFromReader(IDataReader reader)
@@ -44,13 +66,14 @@ namespace Notes.DAL.Repositories.Implementations
                 return new User()
                 {
                     Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                    RoleId = reader.GetInt32(reader.GetOrdinal("RoleId")),
-                    RoleName = reader.GetString(reader.GetOrdinal("RoleName")),
-                    UserName = reader.GetString(reader.GetOrdinal("Username")),
-                    Email = reader.GetString(reader.GetOrdinal("Email")),
+                    Login = reader.GetString(reader.GetOrdinal("Login")),
                     Password = reader.GetString(reader.GetOrdinal("Password")),
+                    Email = reader.GetString(reader.GetOrdinal("Email")),
+                    Name = GetAsString(reader, "Name"),
                     Status = reader.GetInt32(reader.GetOrdinal("Status")),
-                    CreatedOnDate = reader.GetDateTime(reader.GetOrdinal("CreatedOnDate"))
+                    CreatedOnDate = reader.GetDateTime(reader.GetOrdinal("CreatedOnDate")),
+                    LastLogin = GetAsDateTime(reader, "LastLogin"),
+                    NameOrLogin = GetAsString(reader, "NameOrLogin")
                 };                
             }
             catch (Exception e)
@@ -63,11 +86,11 @@ namespace Notes.DAL.Repositories.Implementations
         {        
             try
             {
-                parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = value.Id });
-                parameters.Add(new SqlParameter("@RoleId", SqlDbType.Int) { Value = value.RoleId });
-                parameters.Add(new SqlParameter("@Username", SqlDbType.NVarChar, 50) { Value = value.UserName });
-                parameters.Add(new SqlParameter("@Email", SqlDbType.NVarChar, 50) { Value = value.Email });
+                parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = value.Id });                
+                parameters.Add(new SqlParameter("@Login", SqlDbType.NVarChar, 50) { Value = value.Login });
                 parameters.Add(new SqlParameter("@Password", SqlDbType.NVarChar, 40) { Value = value.Password });
+                parameters.Add(new SqlParameter("@EMail", SqlDbType.NVarChar, 50) { Value = value.Email });
+                parameters.Add(new SqlParameter("@Name", SqlDbType.NVarChar, 50) { Value = value.Name });
                 parameters.Add(new SqlParameter("@Status", SqlDbType.Int) { Value = value.Status });
             }
             catch (Exception e)
@@ -82,21 +105,21 @@ namespace Notes.DAL.Repositories.Implementations
             {
                 IDbCommand command = _db.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = "dbo.UserUpdatePassword";
+                command.CommandText = "dbo.UpdatePasswordUser";
                 command.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = id });
-                command.Parameters.Add(new SqlParameter("@Passowrd", SqlDbType.NVarChar, 40) { Value = PasswordHash.HashString(password) });
+                command.Parameters.Add(new SqlParameter("@Password", SqlDbType.NVarChar, 40) { Value = PasswordHash.HashString(password) });
                 int resultCode = command.ExecuteNonQuery();
                 if (resultCode <= 0)
                 {
-                    throw new NoteNotFoundException("User not found");
+                    throw new NoteNotFoundException("Пользователь не найден");
                 }
                 else if (resultCode > 1)
                 {
-                    throw new NoteDataException("Database integrity error. Please, call database's administrator");
+                    throw new NoteDataException("Ошибка целостности базы данных");
                 }
             }
             else
-                throw new NoteArgumentException("Invalid parameter value");
+                throw new NoteArgumentException();
         }
     }
 }

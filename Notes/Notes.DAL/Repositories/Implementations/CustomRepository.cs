@@ -93,6 +93,30 @@ namespace Notes.DAL.Repositories.Implementations
             }
         }
 
+        protected string GetDbError(int code)
+        {
+            try
+            {
+                using (IDbCommand command = _db.CreateCommand())
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandText = "dbo.getErrorMessage";
+                    command.Parameters.Add(new SqlParameter { ParameterName = "@Code", Value = code });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "@Message", Direction = ParameterDirection.Output });
+                    int procedureResult = command.ExecuteNonQuery();
+                    if (procedureResult == 0)
+                    {
+                        return command.Parameters["@Message"].ToString();
+                    }
+                    else
+                        return $"Ошибка {procedureResult}";
+                }
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
         public void Delete(int id)
         {
             try
@@ -105,7 +129,7 @@ namespace Notes.DAL.Repositories.Implementations
                     int procedureResult = command.ExecuteNonQuery();
                     if (procedureResult != 1)
                     {
-                        throw new NoteDataException($"Database error 0x{procedureResult:X,-8}");
+                        throw new NoteDataException(GetDbError(procedureResult));
                     }
                 }
             }

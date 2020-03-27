@@ -70,7 +70,7 @@ namespace Notes.DAL.Repositories.Implementations
                 }
             }
             else
-                throw new NoteArgumentException("Invalid parameter value");
+                throw new NoteArgumentException();
         }
 
         public int GetTotalCount()
@@ -88,7 +88,7 @@ namespace Notes.DAL.Repositories.Implementations
                             return 0;
                     }
                 }
-            }
+            }            
             catch (Exception e)
             {
                 throw new NoteCustomException(e.Message);

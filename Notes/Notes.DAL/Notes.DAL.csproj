@@ -175,6 +175,7 @@
   <ItemGroup>
     <Compile Include="DbContext\INotesDbContext.cs" />
     <Compile Include="Entities\Category.cs" />
+    <Compile Include="Entities\UserRole.cs" />
     <Compile Include="Entities\NoteReference.cs" />
     <Compile Include="Entities\Role.cs" />
     <Compile Include="Entities\User.cs" />
@@ -188,7 +189,9 @@
     <Compile Include="Repositories\Implementations\UserRepository.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
+    <Compile Include="Repositories\Implementations\UserRoleRepository.cs" />
     <Compile Include="Repositories\interfaces\IUserRepository.cs" />
+    <Compile Include="Repositories\interfaces\IUserRoleRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

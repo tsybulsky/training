@@ -1,0 +1,56 @@
+﻿@model Notes.App.ViewModels.User.UserDetailViewModel
+
+<div id="tabs">
+    <ul>
+        <li><a href="#page1">Основные</a></li>
+        <li><a href="#page2">Роли</a></li>
+    </ul>
+</div>
+<div id="page1">
+    <table class="table-borderless">
+        <tr>
+            <td class="w-50">@Html.DisplayNameFor(model => model.Login)</td>
+            <td>@Html.DisplayFor(model => model.Login)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Name)</td>
+            <td>@Html.DisplayFor(model => model.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Email)</td>
+            <td>@Html.DisplayFor(model => model.Email)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.CreatedOnDate)</td>
+            <td>@Html.DisplayFor(model => model.CreatedOnDate)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.LastLogin)</td>
+            <td>@Html.DisplayFor(model => model.LastLogin)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Status)</td>
+            <td>@((Model.Status==0)?"Активный":"Заблокирован")</td>
+        </tr>
+    </table>
+</div>
+<div id="page2">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Локализованное название</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var role in Model.Roles)
+            {
+                <tr>
+                    <td>@role.RoleName</td>
+                    <td>@role.LocalizedRoleName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

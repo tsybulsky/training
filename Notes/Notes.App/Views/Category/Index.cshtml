@@ -29,13 +29,13 @@
                     {
                         <tr>
                             <td>@category.Id</td>
-                            <td>@Html.ActionLink(category.Name, "Details", "Category", null, new { @class = "details", catId = category.Id })</td>
+                            <td><a href="@Url.Action("Details","Category")" data-id="@category.Id" class="detaillink">@category.Name</a></td>
                             @if ((HttpContext.Current.User.IsInRole(UserPrinciple.ADMIN_ROLE_NAME)) ||
                                 (HttpContext.Current.User.IsInRole(UserPrinciple.EDITOR_ROLE_NAME)))
                             {
                                 <td>
-                                    <a href="@Url.Action("Edit","Category",new { Id = category.Id })" class="editlink"><img src="@Url.Content("~/Content/images/edit32.png")" /></a>
-                                    <a href="@Url.Action("Delete","Category", new { Id = category.Id })" class="deletelink"><img src="@Url.Content("~/Content/images/delete32.png")" /></a>
+                                    <a href="@Url.Action("Edit","Category")" data-id="@category.Id" class="editlink"><img src="@Url.Content("~/Content/images/edit32.png")" /></a>
+                                    <a href="@Url.Action("DoDelete","Category")" data-id="@category.Id" class="deletelink"><img src="@Url.Content("~/Content/images/delete32.png")" /></a>
                                 </td>
                             }
                             else
@@ -50,7 +50,7 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        $(".details").on("click", showCategoryDetails);
+        $(".detaillink").on("click", showCategoryDetails);
         $(".createlink").on("click", createCategory);
         $(".editlink").on("click", editCategory);
         $(".deletelink").on("click", deleteCategory);

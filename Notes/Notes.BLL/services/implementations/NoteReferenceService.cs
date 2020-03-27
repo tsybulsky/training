@@ -20,7 +20,7 @@ namespace Notes.BLL.Services
             _db = db;
         }
 
-        public bool Create(NoteReferenceDTO noteReference)
+        public void Create(NoteReferenceDTO noteReference)
         {
             if (noteReference != null)
             {
@@ -28,8 +28,7 @@ namespace Notes.BLL.Services
                 {
                     IMapper mapper = new MapperConfiguration(c => c.CreateMap<NoteReferenceDTO, NoteReference>()).CreateMapper();
                     NoteReference noteReferenceEntity = mapper.Map<NoteReferenceDTO, NoteReference>(noteReference);
-                    _db.NoteReferences.Save(noteReferenceEntity);
-                    return true;
+                    _db.NoteReferences.Save(noteReferenceEntity);                    
                 }
                 catch (NoteCustomException)
                 {
@@ -42,18 +41,17 @@ namespace Notes.BLL.Services
             }
             else
             {
-                throw new NoteArgumentException("Неверные параметры вызова");
+                throw new NoteArgumentException();
             }
         }
 
-        public bool Delete(int id)
+        public void Delete(int id)
         {
             if (id >= 0)
             {
                 try
                 {
                     _db.NoteReferences.Delete(id);
-                    return true;
                 }
                 catch (NoteCustomException)
                 {
@@ -65,7 +63,7 @@ namespace Notes.BLL.Services
                 }
             }
             else
-                return false;
+                throw new NoteArgumentException();
         }
 
         public NoteReferenceDTO GetItemById(int id)
@@ -95,7 +93,7 @@ namespace Notes.BLL.Services
                 }
             }
             else
-                throw new NoteArgumentException("Неверные параметры вызова");
+                throw new NoteArgumentException();
         }
 
         public IEnumerable<NoteReferenceDTO> GetList()
@@ -152,7 +150,7 @@ namespace Notes.BLL.Services
             }
         }
 
-        public bool Update(NoteReferenceDTO reference)
+        public void Update(NoteReferenceDTO reference)
         {
             if (reference != null)
             {
@@ -161,7 +159,6 @@ namespace Notes.BLL.Services
                     IMapper mapper = new MapperConfiguration(c => c.CreateMap<NoteReferenceDTO, NoteReference>()).CreateMapper();
                     NoteReference noteReference = mapper.Map<NoteReferenceDTO, NoteReference>(reference);
                     _db.NoteReferences.Save(noteReference);
-                    return true;
                 }
                 catch (NoteCustomException)
                 {
@@ -174,7 +171,7 @@ namespace Notes.BLL.Services
             }
             else
             {
-                throw new NoteArgumentException("Неверное значение параметра");
+                throw new NoteArgumentException();
             }
         }
     }

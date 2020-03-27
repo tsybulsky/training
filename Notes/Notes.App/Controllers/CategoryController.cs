@@ -53,7 +53,7 @@ namespace Notes.App.Controllers
                             OwnerId = note.OwnerId
                         };
                         UserDTO user = users.First(u => u.Id == note.OwnerId);
-                        noteModel.Owner = (user != null) ? (user.UserName) : "не найден";
+                        noteModel.Owner = (user != null) ? (user.NameOrLogin) : "не найден";
                         model.Notes.Add(noteModel);
                         if (++counter > 9)
                             break;
@@ -117,35 +117,35 @@ namespace Notes.App.Controllers
 
 
         [HttpPost]
-        public ActionResult Edit(CategoryEditViewModel model)
+        public ActionResult DoEdit(CategoryEditViewModel model)
         {
+            JsonResult result = new JsonResult();
             if ((model != null)&&(ModelState.IsValid))
             {
                 CategoryDTO category = MapCategoryViewModelToCategoryDTO(model);
                 try
                 {
                     _bl.Categories.Update(category);
+                    result.Data = new { Code = 0, Message = "OK" };
                 }
                 catch (NoteCustomException e)
                 {
-                    model.Error = e.Message;
-                    return View(model);
+                    result.Data = new { Code = -1, Message = e.Message };
                 }
                 catch (Exception e)
                 {
-                    return new HttpNotFoundResult(e.Message);
-                }
-                return RedirectToAction(nameof(Index));
+                    result.Data = new { Code = -2, Message = e.Message };
+                }                
             }
             else
             {
-                model.Error = "Что-то пошло не так";
-                return View(model);
+                result.Data = new { Code = -3, Message = "Ошибка проверки данных" };
             }
+            return result;
         }
 
         [HttpPost]
-        public ActionResult Delete(int id)
+        public ActionResult DoDelete(int id)
         {
             JsonResult result = new JsonResult();
             try

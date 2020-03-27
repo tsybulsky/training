@@ -152,7 +152,7 @@ namespace Notes.BLL.Services
                 }
             }
             else
-                throw new NoteArgumentException("Неверные параметры вызова");           
+                throw new NoteArgumentException();
         }
     }   
 }

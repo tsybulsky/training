@@ -20,22 +20,51 @@
                 @if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
                 {
                     <ul class="nav nav-tabs">
-                        <li class="active nav-link">@Html.ActionLink("Категории","Index","Category")</li> 
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="categoryMenu"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Категории
+                            </a>
+                           <div class="dropdown-menu" aria-labelledby="categoryMenu">
+                               <a class="dropdown-item" href="@Url.Action("Index","Category")">Показать список</a>
+                               <a class="dropdown-item" href="javascript:void(0)" onclick="createCategory()">Добавить</a>
+                           </div>
+                        </li>
                         <li class="nav-link">@Html.ActionLink("Заметки","Index","Note")</li>
-                        <li class="nav-link">@Html.ActionLink("Поиск","Index","Search")</li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchMenu" 
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Поиск
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="searchMenu">
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="searchByName()">По названию</a>
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="searchByCategoryName()">По названию категории</a>
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="searchByDate()">По дате события</a>
+                            </div>
+                        </li>
                         @if (HttpContext.Current.User.IsInRole(UserPrinciple.ADMIN_ROLE_NAME))
                         {
-                            <li class="nav-link">@Html.ActionLink("Пользователи","Index","Users")</li>
+                            <li class="nav-link">@Html.ActionLink("Пользователи","Index","User")</li>
                         }
                         else 
                         { 
                         <li class="nav-link disabled">&nbsp;</li>
                         }
-                        <li class="nav-link">@Html.ActionLink(System.Web.HttpContext.Current.User.Identity.Name, "Details", "Account")</li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" 
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @System.Web.HttpContext.Current.User.Identity.Name
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="userMenu">
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="showLoggedUser()">Информация</a>
+                                <a class="dropdown-item" href="#" onclick="changePassword()">Сменить пароль</a>
+                                <a class="dropdown-item" href="#" onclick="logout()">Выйти</a>
+                            </div>
+                        </li>
                     </ul>
-                    <span>
+                   <!-- <span>
                         <input type="button" value="Выйти" onclick="logout();"/>
-                    </span>
+                    </span>-->
                  }                
             </div>            
         </div>
@@ -49,5 +78,12 @@
     </div>
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+<script>
+     $(function () {        
+        $(document).ajaxComplete(function () {
+            $.validator.unobtrusive.parse(document);
+        });
+    });
+</script>
 </body>
 </html>

@@ -1,0 +1,24 @@
+﻿@model  Notes.App.ViewModels.User.AddUserRoleViewModel
+
+@using (Html.BeginForm("AddRole","User",FormMethod.Post,new { @class="form-horizontal", id="addUserRoleForm"}))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" value="@Model.UserId"/>
+    <div class="form-group">
+        @Html.LabelFor(model => model.NameOrLogin, new {@class = "col-md-2"})
+        <div class="col-md-10">
+            <input type="text" id="NameOrLogin" value="@Model.NameOrLogin" readonly class="form-control col-md-12"/>
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.SelectedRole, new { @class = "col-md-2" })
+        <div class="col-md-10">
+            <select id="SelectedRole" class="form-control col-md-12">
+                @foreach (var role in Model.Roles)
+                {
+                    <option value="@role.Id" @((role.Id == Model.SelectedRole)?"selected":"")>@role.Name</option>
+                }
+            </select>
+        </div>
+    </div>
+}

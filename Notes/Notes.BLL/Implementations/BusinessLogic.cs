@@ -14,18 +14,25 @@ namespace Notes.BLL
     {
         private readonly INotesDbContext _db;        
         public BusinessLogic(INotesDbContext db, IUserService users, ICategoryService categories, 
-            INoteService notes, INoteReferenceService noteReferences)
+            INoteService notes, INoteReferenceService noteReferences, IRoleService roles, IUserRoleService userRoles)
         {
             _db = db;
+            Roles = roles;
             Users = users;
+            UserRoles = userRoles;
             Categories = categories;
             Notes = notes;
             NoteReferences = noteReferences;
+
         }
 
         public IUserService Users { get; }
         public INoteService Notes { get; }
         public ICategoryService Categories { get; }        
         public INoteReferenceService NoteReferences { get; }
+
+        public IRoleService Roles { get; }
+
+        public IUserRoleService UserRoles { get; }
     }
 }

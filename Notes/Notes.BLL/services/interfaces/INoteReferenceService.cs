@@ -11,9 +11,9 @@ namespace Notes.BLL.Services
     {
         IEnumerable<NoteReferenceDTO> GetList();
         NoteReferenceDTO GetItemById(int id);
-        bool Delete(int id);
-        bool Update(NoteReferenceDTO category);
-        bool Create(NoteReferenceDTO category);
+        void Delete(int id);
+        void Update(NoteReferenceDTO category);
+        void Create(NoteReferenceDTO category);
         IEnumerable<NoteReferenceDTO> GetReferencesTo(int id);
         IEnumerable<NoteReferenceDTO> GetReferencedFrom(int id);
     }

@@ -1,9 +1,9 @@
 ﻿using Notes.App.ViewModels.Account;
 using Notes.BLL;
 using Notes.BLL.DTOModels;
-using System.Web.Mvc;
-using System;
 using Notes.Common.Exceptions;
+using System;
+using System.Web.Mvc;
 
 namespace Notes.App.Controllers
 {
@@ -14,10 +14,10 @@ namespace Notes.App.Controllers
         {
             _bl = bl;
         }
-        // GET: Account
+
         public ActionResult Index()
         {
-            return View();
+            return new EmptyResult();
         }
 
         public ActionResult Login(string returnUrl)
@@ -71,48 +71,73 @@ namespace Notes.App.Controllers
 
         public ActionResult Details()
         {
-            return View();
+            LoggedUser user = (HttpContext.User as LoggedUser);
+            if (user != null)
+            {
+                return PartialView(user);
+            }
+            else
+            {
+                return Content("<div class=\"text-danger\">Возможно вход не выполнен</div>");
+            }
         }
 
         [HttpGet]
-        ActionResult ChangePassword(int? id)
+        public ActionResult ChangePassword(int? id)
         {
             int id2 = id ?? (HttpContext.User as LoggedUser).Id;
             if (id2 > 0)
             {
                 UserDTO user = _bl.Users.GetItemById(id2);
-                ChangePasswordModel model = new ChangePasswordModel()
+                ChangePasswordViewModel model = new ChangePasswordViewModel()
                 {
                     Id = id2,
-                    UserName = user.UserName,
+                    Login = user.Login,
                     NewPassword = "",
                     ConfirmPassword = ""
                 };
-                return View(model);
+                return PartialView(model);
             }
             else
             {
-                return RedirectToRoute("/");
+                return Content("<div class=\"text-danger\"></div>");
             }
         }
 
         [HttpPost]
-        public ActionResult ChangePassword(ChangePasswordModel model)
+        public ActionResult ChangePassword(ChangePasswordViewModel model)
         {
+            JsonResult result = new JsonResult();
             if (ModelState.IsValid)
             {
                 try
                 {
                     _bl.Users.ChangePassword(model.Id, model.OldPassword, model.NewPassword);
-                    return RedirectToRoute("/");
+                    result.Data = new { Code = 0, Message = "OK" };
                 }
-                catch
+                catch (NoteCustomException e)
                 {
-                    return new HttpNotFoundResult();
+                    result.Data = new { Code = 1, Message = e.Message };
                 }
             }
             else
-                return View(model);
+            {
+                result.Data = new { Code = 2, Message = "Ошибка смены пароля. Проверьте все параметры и повторите попытку" };
+            }
+            return result;
+        }
+
+        public ActionResult AdminSetPassword(int id)
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+        public ActionResult AdminSetPassword(AdminSetPasswordViewModel model)
+        {
+            JsonResult result = new JsonResult();
+            result.Data = new { Code = 0, Message = "Еще не реализовано" };
+            return result;
         }
     }
 }

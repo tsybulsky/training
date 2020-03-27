@@ -42,7 +42,7 @@ namespace Notes.App.Controllers
             if (note != null)
             {
                 note.Category = _bl.Categories.GetItemById(note.CategoryId)?.Name;
-                note.Owner = _bl.Users.GetItemById(note.OwnerId)?.UserName;
+                note.Owner = _bl.Users.GetItemById(note.OwnerId)?.NameOrLogin;
                 IMapper mapper = new MapperConfiguration(c => c.CreateMap<NoteDTO, NoteDetailViewModel>()).CreateMapper();
                 NoteDetailViewModel model = mapper.Map<NoteDTO, NoteDetailViewModel>(note);
                 model.References = new List<NoteReferenceViewModel>();
@@ -96,7 +96,7 @@ namespace Notes.App.Controllers
             {
                 NoteEditViewModel model = new NoteEditViewModel();
                 model.OwnerId = ((UserPrinciple)(HttpContext.User)).Id;
-                model.Owner = _bl.Users.GetItemById(model.OwnerId)?.UserName;
+                model.Owner = _bl.Users.GetItemById(model.OwnerId)?.NameOrLogin;
                 model.CreationDate = DateTime.Now;
                 model.Categories = _bl.Categories.GetList().OrderBy(c => c.Name).ToList();
                 return PartialView(model);
@@ -155,7 +155,7 @@ namespace Notes.App.Controllers
                         IMapper mapper = new MapperConfiguration(c => c.CreateMap<NoteDTO, NoteEditViewModel>()).CreateMapper();
                         NoteEditViewModel model = mapper.Map<NoteDTO, NoteEditViewModel>(note);
                         model.Categories = _bl.Categories.GetList().OrderBy(c => c.Name).ToList();
-                        model.Owner = _bl.Users.GetItemById(model.OwnerId)?.UserName;
+                        model.Owner = _bl.Users.GetItemById(model.OwnerId)?.NameOrLogin;
                         return PartialView(model);
                     }
                     else

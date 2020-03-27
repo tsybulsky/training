@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Notes.App.ViewModels.User.UserIndexViewModel>
+@using Notes.BLL
+
+@if (HttpContext.Current.User.Identity.IsAuthenticated && HttpContext.Current.User.IsInRole(UserPrinciple.ADMIN_ROLE_NAME))
+    {
+        <div class="btn"><a href="@Url.Action("Create","User")" class="createlink"><img src="@Url.Content("~/Content/images/add32.png")" /> Создать</a></div>
+    }
+<div class="row">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Login)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model=>model.CreatedOnDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model=>model.LastLogin)
+                </th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+            <tr>
+                <td>
+                    <a href="@Url.Action("Details", "User")" data-id="@user.Id" class="detailslink">
+                        @Html.DisplayFor(model=>user.Login)
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(model=>user.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => user.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(model=>user.CreatedOnDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => user.LastLogin)
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "User")" data-id="@user.Id" class="editlink">
+                        <img src="@Url.Content("~/Content/images/edit32.png")" />
+                    </a>
+                    <a href="@Url.Action("Delete", "User")" data-id="@user.Id" class="deletelink">
+                        <img src="@Url.Content("~/Content/images/delete32.png")" />
+                    </a>
+                </td>
+            </tr>
+            }
+            </tbody>
+        </table>
+</div>
+<script>
+    $(document).ready(function () {
+        $(".createlink").on("click", createUser);
+        $(".detailslink").on("click", showUserDetails);
+        $(".editlink").on("click", editUser);
+        $(".deletelink").on("click", deleteUser);
+    })
+</script>

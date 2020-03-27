@@ -68,7 +68,9 @@
     <Compile Include="DTOModels\LoggedUser.cs" />
     <Compile Include="DTOModels\NoteDTO.cs" />
     <Compile Include="DTOModels\NoteReferenceDTO.cs" />
+    <Compile Include="DTOModels\RoleDTO.cs" />
     <Compile Include="DTOModels\UserDTO.cs" />
+    <Compile Include="DTOModels\UserRoleDTO.cs" />
     <Compile Include="Implementations\BusinessLogic.cs" />
     <Compile Include="Implementations\UserPrinciple.cs" />
     <Compile Include="Interfaces\IBusinessLogic.cs" />
@@ -76,10 +78,14 @@
     <Compile Include="services\implementations\CategoryService.cs" />
     <Compile Include="services\implementations\NoteReferenceService.cs" />
     <Compile Include="services\implementations\NoteService.cs" />
+    <Compile Include="services\implementations\RoleService.cs" />
+    <Compile Include="services\implementations\UserRoleService.cs" />
     <Compile Include="services\implementations\UserService.cs" />
     <Compile Include="services\interfaces\ICategoryService.cs" />
     <Compile Include="services\interfaces\INoteReferenceService.cs" />
     <Compile Include="services\interfaces\INoteService.cs" />
+    <Compile Include="services\interfaces\IRoleService.cs" />
+    <Compile Include="services\interfaces\IUserRoleService.cs" />
     <Compile Include="services\interfaces\IUserService.cs" />
   </ItemGroup>
   <ItemGroup>

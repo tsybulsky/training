@@ -35,13 +35,13 @@ namespace Notes.App
             {
                 FormsAuthenticationTicket ticket = FormsAuthentication.Decrypt(cookie.Value);
                 LoggedUser user = JsonConvert.DeserializeObject<LoggedUser>(ticket.UserData);
-                UserPrinciple userPrincipal = new UserPrinciple(user.UserName)
+                UserPrinciple userPrincipal = new UserPrinciple(user.Login)
                 {
                     Id = user.Id,
-                    UserName = user.UserName,
+                    Login = user.Login,                    
                     Email = user.Email,
-                    IsAdmin = user.IsAdmin,
-                    IsEditor = user.IsEditor
+                    Name = user.Name,
+                    Roles = user.Roles
                 };
                 HttpContext.Current.User = userPrincipal;
             }
