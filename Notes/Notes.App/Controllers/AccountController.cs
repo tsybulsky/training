@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Notes.App.ViewModels.Account;
-using Notes.BLL.DTOModels;
+﻿using Notes.App.ViewModels.Account;
 using Notes.BLL;
+using Notes.BLL.DTOModels;
+using Notes.Common.Exceptions;
+using System;
+using System.Web.Mvc;
 
 namespace Notes.App.Controllers
 {
@@ -16,89 +14,130 @@ namespace Notes.App.Controllers
         {
             _bl = bl;
         }
-        // GET: Account
+
         public ActionResult Index()
         {
+            return new EmptyResult();
+        }
+
+        public ActionResult Login(string returnUrl)
+        {
+            if (!String.IsNullOrWhiteSpace(returnUrl))
+                ViewData["returnUrl"] = returnUrl;
+            else
+                ViewData["returnUrl"] = "";
             return View();
         }
 
-        public ActionResult Login()
+        [HttpPost]       
+        public ActionResult DoLogin(string username, string password)
         {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult Login(LoginViewModel model)
-        {
-            if (model != null)
+            JsonResult result = new JsonResult();
+            if ((!String.IsNullOrWhiteSpace(username))&&
+                (!String.IsNullOrEmpty(password)))
             {
-                if (ModelState.IsValid)
+                if (_bl.Users.Login(username, password) != null)
                 {
-                    if (_bl.Users.Login(model.UserName, model.Password) != null)
-                    {
-                        return Redirect("~/Home/Index");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Error", "Invalid user name or password");                        
-                    }
+                    result.Data = new { Code = 0, Message = "OK" };
                 }
                 else
-                    ModelState.AddModelError("Error", "Something wrong");
+                {
+                    result.Data = new { Code = -3, Message = "Неверное имя пользователя или пароль" };
+                }
             }
-            return View();
+            else
+                result.Data = new { Code = -1, Message = "Неверные параметры вызова" };
+            return result;
         }
-
+        [HttpPost]
         public ActionResult Logout()
         {
-            _bl.Users.Logout();
-            return View();
+            JsonResult result = new JsonResult();
+            try
+            {
+                _bl.Users.Logout();
+                result.Data = new { Code = 0, Message = "OK" };
+            }
+            catch (NoteCustomException e)
+            {
+                result.Data = new { Code = -1, Message = e.Message };
+            }
+            catch (Exception e)
+            {
+                result.Data = new { Code = -2, Message = e.Message };
+            }
+            return result;
         }
 
         public ActionResult Details()
         {
-            return View();
+            LoggedUser user = (HttpContext.User as LoggedUser);
+            if (user != null)
+            {
+                return PartialView(user);
+            }
+            else
+            {
+                return Content("<div class=\"text-danger\">Возможно вход не выполнен</div>");
+            }
         }
 
         [HttpGet]
-        ActionResult ChangePassword(int? id)
+        public ActionResult ChangePassword(int? id)
         {
             int id2 = id ?? (HttpContext.User as LoggedUser).Id;
             if (id2 > 0)
             {
                 UserDTO user = _bl.Users.GetItemById(id2);
-                ChangePasswordModel model = new ChangePasswordModel()
+                ChangePasswordViewModel model = new ChangePasswordViewModel()
                 {
                     Id = id2,
-                    UserName = user.UserName,
+                    Login = user.Login,
                     NewPassword = "",
                     ConfirmPassword = ""
                 };
-                return View(model);
+                return PartialView(model);
             }
             else
             {
-                return RedirectToRoute("/");
+                return Content("<div class=\"text-danger\"></div>");
             }
         }
 
         [HttpPost]
-        public ActionResult ChangePassword(ChangePasswordModel model)
+        public ActionResult ChangePassword(ChangePasswordViewModel model)
         {
+            JsonResult result = new JsonResult();
             if (ModelState.IsValid)
             {
                 try
                 {
                     _bl.Users.ChangePassword(model.Id, model.OldPassword, model.NewPassword);
-                    return RedirectToRoute("/");
+                    result.Data = new { Code = 0, Message = "OK" };
                 }
-                catch
+                catch (NoteCustomException e)
                 {
-                    return new HttpNotFoundResult();
+                    result.Data = new { Code = 1, Message = e.Message };
                 }
             }
             else
-                return View(model);
+            {
+                result.Data = new { Code = 2, Message = "Ошибка смены пароля. Проверьте все параметры и повторите попытку" };
+            }
+            return result;
+        }
+
+        public ActionResult AdminSetPassword(int id)
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+        public ActionResult AdminSetPassword(AdminSetPasswordViewModel model)
+        {
+            JsonResult result = new JsonResult();
+            result.Data = new { Code = 0, Message = "Еще не реализовано" };
+            return result;
         }
     }
 }

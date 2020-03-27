@@ -1,33 +1,43 @@
 ﻿@model Notes.App.ViewModels.Note.NoteIndexViewModel
+@using Notes.BLL
 
 @{
     ViewBag.Title = "Заметки. Записная книжка";
 }
 
-<h2>Заметки</h2>
+<h4>Заметки</h4>
 <div class="row h-100">
     <div class="col-md-2 h-100">
-        <ul class="list-group">
+        <div>
             @foreach (var item in Model.Categories)
             {
-                <li class="list-group-item">@Html.ActionLink(@item.Name, "ByCategory", "Note", new { Id = @item.Id }, null) </li>             
+                @Html.ActionLink(item.Name, "ByCategory", "Note", new { Id = item.Id }, null)<br />
             }
-        </ul>
+        </div>
     </div>
     <div class="col-md-8 h-100" id="content">
+        <div class="btn"><a href="/Note/Create" class="createlink" dialog-title="Создание заметки"><img src="@Url.Content("/Content/images/add32.png")" /> Создать</a> </div>
+        <hr />
         @foreach (var item in Model.Notes)
         {
-        <span>
             <div class="card w-50">
                 <div class="card-header">
                     @Html.ActionLink(item.Title, "Details", "Note", new { Id = item.Id },
-                        new { @class = "dlg", dialog_title = "Подробности" })
+                        new { @class = "details", dialog_title = "Подробности" })
                 </div>
                 <div class="card-body">
                     @item.Description
                 </div>
+                @if ((HttpContext.Current.User != null)&&(HttpContext.Current.User as UserPrinciple != null)&&
+                    (HttpContext.Current.User.IsInRole("admin") || HttpContext.Current.User.IsInRole("editor") ||
+                    (((UserPrinciple)(HttpContext.Current.User)).Id == item.OwnerId)))
+                {
+                    <div class="btn-toolbar">
+                        <a href="/Note/Edit/@item.Id" class="editlink"><img src="@Url.Content("/Content/images/edit32.png")" /></a>
+                        <a href="/Note/Delete/@item.Id" class="deletelink"><img src="@Url.Content("/Content/images/delete32.png")" /></a>
+                    </div>
+                }
             </div>
-        </span>
         }
     </div>
     <div class="col-md-2 h-100">
@@ -39,25 +49,16 @@
       <input type="text" id="searchText"/><br/>            
       <input type="submit" value="Найти" onclick="doSearch();"/>
   }
+        }
     </div>
 </div>
 
 <script>
     $(document).ready(function () {
         $.ajaxSetup({ cache: false });
-        alert("setup");
-        $(".dlg").on("click", function (e) {
-            e.preventDefault();
-            alert("funcion");
-            $("<div></div>")
-                .AddClass("dialog")
-                .appendTo(body)
-                .dialog({
-                    title: $(this).attr("data-dialog-title"),
-                    close: function () { $(this).remove() },
-                    modal: true
-                })
-                .load(this.href);
-        })
+        $(".details").on("click", showNoteDetails)
+        $(".createlink").on("click", createNote);
+        $(".editlink").on("click", editNote);
+        $(".deletelink").on("click", deleteNote);
     });
 </script>

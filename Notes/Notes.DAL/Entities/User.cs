@@ -6,10 +6,7 @@ namespace Notes.DAL.Entities
     public class User
     {
         public int Id { get; set; }
-        public int RoleId { get; set; }
-        public string RoleName { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
+        public string Login { get; set; }        
         private string _password;
         public string Password
         {
@@ -25,7 +22,11 @@ namespace Notes.DAL.Entities
                     _password = value;
             }
         }
+        public string Email { get; set; }
+        public string Name { get; set; }
         public int Status { get; set; }
         public DateTime CreatedOnDate { get; set; }
+        public DateTime? LastLogin { get; set; }
+        public string NameOrLogin { get; set; }
     }
 }

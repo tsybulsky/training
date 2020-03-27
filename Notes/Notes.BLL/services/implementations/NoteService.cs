@@ -99,7 +99,7 @@ namespace Notes.BLL.Services
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                throw new NoteCustomException(e.Message);
             }
         }
 
@@ -120,7 +120,7 @@ namespace Notes.BLL.Services
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                throw new NoteCustomException(e.Message);
             }
         }
 
@@ -135,9 +135,24 @@ namespace Notes.BLL.Services
             throw new NotImplementedException();
         }
 
-        public void Update(NoteDTO user)
+        public void Update(NoteDTO note)
         {
-            throw new NotImplementedException();
+            if (note != null)
+            {
+                try
+                {
+                    IMapper mapper = new MapperConfiguration(c => c.CreateMap<NoteDTO, Note>()).CreateMapper();
+                    Note noteEntity = mapper.Map<NoteDTO, Note>(note);
+                    _db.Notes.Save(noteEntity);
+                }
+                catch (Exception e)
+                {
+                    throw new NoteCustomException(e.Message);
+
+                }
+            }
+            else
+                throw new NoteArgumentException();
         }
     }   
 }

@@ -24,6 +24,7 @@ namespace Notes.App
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             NinjectModule registrations = new NinjectRegistrations();
             var kernel = new StandardKernel(registrations);
+            kernel.Unbind<ModelValidatorProvider>();
             DependencyResolver.SetResolver(new NinjectDependencyResolver(kernel));
         }
 
@@ -34,12 +35,13 @@ namespace Notes.App
             {
                 FormsAuthenticationTicket ticket = FormsAuthentication.Decrypt(cookie.Value);
                 LoggedUser user = JsonConvert.DeserializeObject<LoggedUser>(ticket.UserData);
-                UserPrinciple userPrincipal = new UserPrinciple(user.UserName)
+                UserPrinciple userPrincipal = new UserPrinciple(user.Login)
                 {
                     Id = user.Id,
-                    UserName = user.UserName,
+                    Login = user.Login,                    
                     Email = user.Email,
-                    Role = user.Role
+                    Name = user.Name,
+                    Roles = user.Roles
                 };
                 HttpContext.Current.User = userPrincipal;
             }

@@ -11,10 +11,12 @@ namespace Notes.BLL
 {
     public interface IBusinessLogic
     {
-        //INotesDbContext Db
+        IRoleService Roles { get; }        
         IUserService Users { get; }
+        IUserRoleService UserRoles { get; }
         INoteService Notes { get; }
         ICategoryService Categories { get; }
+        INoteReferenceService NoteReferences { get; }
         
     }
 }

@@ -17,6 +17,7 @@ namespace Notes.DAL.Repositories.Implementations
             _deleteProcedureName = "DeleteNote";
         }
 
+
         protected override Note MapFromReader(IDataReader reader)
         {
             if (reader != null)
@@ -31,17 +32,12 @@ namespace Notes.DAL.Repositories.Implementations
                         Title = reader.GetString(reader.GetOrdinal("Title")),
                         Description = reader.GetString(reader.GetOrdinal("Description")),
                         CreationDate = reader.GetDateTime(reader.GetOrdinal("CreationDate")),
-                        //ActualTill = reader.GetDateTime(reader.GetOrdinal("ActualTill")),
-                        OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId"))
+                        ActualTill = GetAsDateTime(reader,"ActualTill"),
+                        OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
+                        Image = GetAsBytes(reader,"Picture"),
+                        PictureMimeType = GetAsString(reader,"PictureMimeType")
                     };
-                    int actualTillIndex = reader.GetOrdinal("ActualTill");
-                    if (reader[actualTillIndex] is DBNull)
-                        note.ActualTill = null;
-                    else
-                        note.ActualTill = reader.GetDateTime(actualTillIndex);
-                    note.Image = new byte[0];
                     return note;
-
                 }
                 catch (Exception e)
                 {
@@ -66,6 +62,7 @@ namespace Notes.DAL.Repositories.Implementations
                     parameters.Add(new SqlParameter("@CategoryId", SqlDbType.Int) { Value = value.CategoryId });
                     parameters.Add(new SqlParameter("@OwnerId", SqlDbType.Int) { Value = value.OwnerId });
                     parameters.Add(new SqlParameter("@Picture", SqlDbType.VarBinary) { Value = value.Image });
+                    parameters.Add(new SqlParameter("@PictureMimeType", SqlDbType.VarChar, 100) { Value = value.PictureMimeType });
                 }
                 catch (Exception e)
                 {
@@ -73,7 +70,7 @@ namespace Notes.DAL.Repositories.Implementations
                 }
             }
             else
-                throw new NoteArgumentException("Invalid parameter value");
+                throw new NoteArgumentException();
         }
 
         public int GetTotalCount()
@@ -91,7 +88,7 @@ namespace Notes.DAL.Repositories.Implementations
                             return 0;
                     }
                 }
-            }
+            }            
             catch (Exception e)
             {
                 throw new NoteCustomException(e.Message);

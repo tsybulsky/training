@@ -1,4 +1,5 @@
 ﻿@model Notes.App.ViewModels.Category.CategoryIndexViewModel
+@using Notes.BLL
 
 @{
     ViewBag.Title = "Категории";
@@ -8,24 +9,50 @@
     <div class="col-md-2"></div>
     <div class="col-md-8">
         <h2>Категории</h2>
-        <hr/>
-        <table class="table-bordered w-100">
-            <thead>
-                <tr>
-                    <th class="w-25">@Html.LabelFor(model => model.Categories.First().Id)</th>
-                    <th>@Html.LabelFor(model => model.Categories.First().Name)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var category in Model.Categories)
-                {
+        <hr />
+        @if ((HttpContext.Current.User.IsInRole(UserPrinciple.ADMIN_ROLE_NAME)) ||
+                            (HttpContext.Current.User.IsInRole(UserPrinciple.EDITOR_ROLE_NAME)))
+        {
+            <div class="btn"><a href="@Url.Action("Create", "Category")" class="createlink"><img src="@Url.Content("~/Content/images/add32.png")" /> Создать </a></div>
+        }
+            <div id="error"></div>
+            <table class="table-bordered w-100">
+                <thead>
                     <tr>
-                        <td>@category.Id</td>
-                        <td>@Html.ActionLink(category.Name, "Details", "Category", new { Id = category.Id })</td>
+                        <th class="w-25">@Html.LabelFor(model => model.Categories.First().Id)</th>
+                        <th>@Html.LabelFor(model => model.Categories.First().Name)</th>
+                        <th style="width:10%">&nbsp;</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <tr>
+                            <td>@category.Id</td>
+                            <td><a href="@Url.Action("Details","Category")" data-id="@category.Id" class="detaillink">@category.Name</a></td>
+                            @if ((HttpContext.Current.User.IsInRole(UserPrinciple.ADMIN_ROLE_NAME)) ||
+                                (HttpContext.Current.User.IsInRole(UserPrinciple.EDITOR_ROLE_NAME)))
+                            {
+                                <td>
+                                    <a href="@Url.Action("Edit","Category")" data-id="@category.Id" class="editlink"><img src="@Url.Content("~/Content/images/edit32.png")" /></a>
+                                    <a href="@Url.Action("DoDelete","Category")" data-id="@category.Id" class="deletelink"><img src="@Url.Content("~/Content/images/delete32.png")" /></a>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>&nbsp;</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>    
 </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".detaillink").on("click", showCategoryDetails);
+        $(".createlink").on("click", createCategory);
+        $(".editlink").on("click", editCategory);
+        $(".deletelink").on("click", deleteCategory);
+                            })                    
+</script>

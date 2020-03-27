@@ -11,7 +11,7 @@ namespace Notes.DAL.Repositories.Implementations
         public CategoryRepository(IDbConnection db):base(db)
         {
             _viewName = "dbo.GetCategories";
-            _saveProcedureName = "dbo.SaveGetegory";
+            _saveProcedureName = "dbo.SaveCategory";
             _deleteProcedureName = "dbo.deleteCategory";
         }
         protected override Category MapFromReader(IDataReader reader)
@@ -21,6 +21,7 @@ namespace Notes.DAL.Repositories.Implementations
             {
                 return new Category()
                 {
+                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
                     Name = reader.GetString(reader.GetOrdinal("Name"))
                 };
             }

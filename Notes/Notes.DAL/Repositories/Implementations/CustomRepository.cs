@@ -93,6 +93,30 @@ namespace Notes.DAL.Repositories.Implementations
             }
         }
 
+        protected string GetDbError(int code)
+        {
+            try
+            {
+                using (IDbCommand command = _db.CreateCommand())
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandText = "dbo.getErrorMessage";
+                    command.Parameters.Add(new SqlParameter { ParameterName = "@Code", Value = code });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "@Message", Direction = ParameterDirection.Output });
+                    int procedureResult = command.ExecuteNonQuery();
+                    if (procedureResult == 0)
+                    {
+                        return command.Parameters["@Message"].ToString();
+                    }
+                    else
+                        return $"Ошибка {procedureResult}";
+                }
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
         public void Delete(int id)
         {
             try
@@ -105,7 +129,7 @@ namespace Notes.DAL.Repositories.Implementations
                     int procedureResult = command.ExecuteNonQuery();
                     if (procedureResult != 1)
                     {
-                        throw new NoteDataException($"Database error 0x{procedureResult:X,-8}");
+                        throw new NoteDataException(GetDbError(procedureResult));
                     }
                 }
             }
@@ -117,6 +141,39 @@ namespace Notes.DAL.Repositories.Implementations
 
         protected abstract T MapFromReader(IDataReader reader);
 
+        protected string GetAsString(IDataReader reader, string fieldName)
+        {
+            int fieldIndex = reader.GetOrdinal(fieldName);
+            return (reader.IsDBNull(fieldIndex)) ? null : reader.GetString(fieldIndex);
+        }
+        
+        protected int? GetAsIntNullable(IDataReader reader, string fieldName)
+        {
+            int fieldIndex = reader.GetOrdinal(fieldName);
+            return (reader.IsDBNull(fieldIndex)) ? null : (int?)reader.GetInt32(fieldIndex);
+        }
+
+        protected byte[] GetAsBytes(IDataReader reader, string fieldName)
+        {
+            int fieldIndex = reader.GetOrdinal(fieldName);
+            if (reader.IsDBNull(fieldIndex))
+            {
+                return null;
+            }
+            else
+            {
+                long fieldSize = reader.GetBytes(fieldIndex, 0, null, 0, 0);
+                byte[] result = new byte[fieldSize];
+                reader.GetBytes(fieldIndex, 0, result, 0, (int)fieldSize);
+                return result;
+            }
+        }
+
+        protected DateTime? GetAsDateTime(IDataReader reader, string fieldName)
+        {
+            int fieldIndex = reader.GetOrdinal(fieldName);
+            return (reader.IsDBNull(fieldIndex)) ? null : (DateTime?)reader.GetDateTime(fieldIndex);
+        }
         protected abstract void MapToParameters(T value, IDataParameterCollection parameters);
 
         public List<T> GetAll()
@@ -154,6 +211,9 @@ namespace Notes.DAL.Repositories.Implementations
                     command.CommandType = CommandType.StoredProcedure;
                     command.CommandText = _saveProcedureName;
                     MapToParameters(item, command.Parameters);
+                    int result = command.ExecuteNonQuery();
+                    if (result != 1)
+                        throw new NoteCustomException("Ошибка сохранения данных");
                 }
             }
             catch (Exception e)

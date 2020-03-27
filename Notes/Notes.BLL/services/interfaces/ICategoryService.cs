@@ -8,8 +8,8 @@ namespace Notes.BLL.Services
         IEnumerable<CategoryDTO> GetList();
         
         CategoryDTO GetItemById(int id);
-        bool Delete(int id);
-        bool Update(CategoryDTO user);
-        bool Create(CategoryDTO user);
+        void Delete(int id);
+        void Update(CategoryDTO category);
+        void Create(CategoryDTO category);
     }
 }

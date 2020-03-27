@@ -16,36 +16,57 @@ namespace Notes.BLL.Services
     public class UserService : IUserService
     {
         private readonly INotesDbContext _db;
+        private readonly IUserRoleService _userRoles;
         
-        public UserService(INotesDbContext db)
+        public UserService(INotesDbContext db, IUserRoleService userRoles)
         {
             _db = db;
+            _userRoles = userRoles;
         }
 
-        public bool Create(UserDTO user)
+        public void Create(UserDTO user)
         {
             if (user != null)
             {
-                IMapper mapper = new MapperConfiguration(c => c.CreateMap<UserDTO, User>()).CreateMapper();
-                User userEntity = mapper.Map<User>(user);
-                _db.Users.Save(userEntity);
-                return true;
+                try
+                {
+                    IMapper mapper = new MapperConfiguration(c => c.CreateMap<UserDTO, User>()).CreateMapper();
+                    User userEntity = mapper.Map<User>(user);
+                    _db.Users.Save(userEntity);
+                }
+                catch (NoteCustomException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    throw new NoteCustomException(e.Message);
+                }
             }
             else
-                throw new NoteArgumentException("");
+                throw new NoteArgumentException();
         }
 
-        public bool Delete(int id)
+        public void Delete(int id)
         {
-            try
+            if (id > 0)
             {
-                _db.Users.Delete(id);
-                return true;
+                try
+                {
+
+                    _db.Users.Delete(id);
+                }
+                catch (NoteCustomException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    throw new NoteCustomException(e.Message);
+                }
             }
-            catch (Exception e)
-            {
-                throw new NoteCustomException(e.Message);
-            }
+            else
+                throw new NoteArgumentException();
         }
 
         public UserDTO GetItemById(int id)
@@ -55,16 +76,13 @@ namespace Notes.BLL.Services
                 User userEntity = _db.Users.GetItemById(id);
                 if (userEntity == null)
                     throw new NoteNotFoundException("User not found");
-                IMapper mapper = new MapperConfiguration(c => c.CreateMap<UserDTO, User>()).CreateMapper();
-                UserDTO user = mapper.Map<UserDTO>(userEntity);
-                Role role = _db.Roles.GetItemById(user.RoleId);
-                if (role != null)
-                {
-                    user.Role = role.Name;
-                    user.IsAdmin = role.IsAdmin;
-                    user.IsEditor = role.IsEditor;
-                }
+                IMapper mapper = new MapperConfiguration(c => c.CreateMap<User, UserDTO>()).CreateMapper();
+                UserDTO user = mapper.Map<User,UserDTO>(userEntity);
                 return user;
+            }
+            catch (NoteCustomException)
+            {
+                throw;
             }
             catch(Exception e)
             {
@@ -79,6 +97,10 @@ namespace Notes.BLL.Services
                 IMapper mapper = new MapperConfiguration(c => c.CreateMap<User, UserDTO>()).CreateMapper();
                 return mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(_db.Users.GetAll());
             }
+            catch (NoteCustomException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 throw new NoteCustomException(e.Message);
@@ -89,18 +111,17 @@ namespace Notes.BLL.Services
         {
             User validUser = _db.Users.Validate(login, password);
             if (validUser != null)
-            {
-                Role role = _db.Roles.GetItemById(validUser.RoleId);
+            {                
                 LoggedUser currentUser = new LoggedUser()
                 {
                     Id = validUser.Id,
-                    UserName = validUser.UserName,
-                    Role = role.Name,
-                    IsAdmin = role.IsAdmin,
-                    IsEditor = role.IsEditor
+                    Login = validUser.Login,                    
+                    Name = validUser.Name,
+                    Email = validUser.Email,
+                    Roles = _userRoles.GetListByUser(validUser.Id)
                 };
                 string userData = JsonConvert.SerializeObject(currentUser);
-                var ticket = new FormsAuthenticationTicket(1, currentUser.UserName, DateTime.Now, DateTime.Now.AddMinutes(20), false, userData);
+                var ticket = new FormsAuthenticationTicket(1, currentUser.Login, DateTime.Now, DateTime.Now.AddMinutes(20), false, userData);
                 var encryptTicket = FormsAuthentication.Encrypt(ticket);
                 HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptTicket);
                 HttpContext.Current.Response.Cookies.Add(cookie);
@@ -117,19 +138,20 @@ namespace Notes.BLL.Services
             FormsAuthentication.SignOut();
         }
 
-        public bool Update(UserDTO user)
+        public void Update(UserDTO user)
         {
             try
             {
                 if (user != null)
-                {
-                    IMapper mapper = new MapperConfiguration(c => c.CreateMap<User, UserDTO>()).CreateMapper();
-                    _db.Users.Save(mapper.Map<UserDTO,User>(user));
-                    return true;
+                {                    
+                    IMapper mapper = new MapperConfiguration(c => c.CreateMap<UserDTO, User>()).CreateMapper();
+                    User newUser = mapper.Map<UserDTO, User>(user);
+                    newUser.Password = "";
+                    _db.Users.Save(newUser);
                 }
                 else
                 {
-                    throw new NoteArgumentException("Invalid parameter value");
+                    throw new NoteArgumentException();
                 }
             }
             catch(Exception e)
@@ -147,7 +169,7 @@ namespace Notes.BLL.Services
                     User user = _db.Users.GetItemById(id);
                     if (user != null)
                     {
-                        if (user.Password != oldPassword)
+                        if (user.Password != PasswordHash.HashString(oldPassword))
                         {
                             throw new NoteInvalidPasswordException("Неверный старый пароль");
                         }

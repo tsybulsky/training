@@ -6,7 +6,11 @@ namespace Notes.DAL.DbContext
     {
         UserRepository Users {get;set;}
         RoleRepository Roles { get; set; }
+        UserRoleRepository UserRoles { get; set; }
         CategoryRepository Categories { get; set; }
         NoteRepository Notes { get; set; }        
+        NoteReferenceRepository NoteReferences { get; set; }
+        string GetDbError(int code);
+        
     }
 }

@@ -2,14 +2,14 @@
 @{
     ViewBag.Title = "Вход";
 }
-
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <h2>Вход в приложение</h2>
             @using (@Html.BeginForm())
             {
-                @Html.AntiForgeryToken();
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
                 <div class="invalid-feedback">
                     @Html.ValidationMessage("Error")
                 </div>
@@ -23,11 +23,18 @@
                     @Html.EditorFor(model => model.Password, new { @class = "form-control" })<br />
                     @Html.ValidationMessageFor(model => model.Password)
                 </div>
+                <input type="hidden" id="returnUrl" value="@ViewData["returnUrl"]"/>
+                <div id="login-error" class="text-danger"></div>
                 <div>
-                    <input type="Submit" value="Log in" />
+                    <input type="Submit" value="Войти" id="loginlink"/>
                 </div>
             }
         </div>
         <div class="col-md-2"></div>
     </div>
+<script>
+    $(document).ready(function () {
+        $("#loginlink").on("click", login)
+    })
+</script>
 

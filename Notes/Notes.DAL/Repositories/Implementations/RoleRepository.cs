@@ -26,8 +26,7 @@ namespace Notes.DAL.Repositories.Implementations
                     {
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
                         Name = reader.GetString(reader.GetOrdinal("Name")),
-                        IsAdmin = reader.GetBoolean(reader.GetOrdinal("IsAdmin")),
-                        IsEditor = reader.GetBoolean(reader.GetOrdinal("IsEditor"))
+                        LocalizedName = reader.GetString(reader.GetOrdinal("LocalizedName"))
                     };
                 }
                 catch (Exception e)
@@ -48,8 +47,7 @@ namespace Notes.DAL.Repositories.Implementations
                 {
                     parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = value.Id });
                     parameters.Add(new SqlParameter("@Name", SqlDbType.NVarChar) { Value = value.Name });
-                    parameters.Add(new SqlParameter("@IsAdmin", SqlDbType.Bit) { Value = value.IsAdmin });
-                    parameters.Add(new SqlParameter("@IsEditor", SqlDbType.Bit) { Value = value.IsEditor });
+                    parameters.Add(new SqlParameter("@LocalizedName", SqlDbType.NVarChar,50) { Value = value.LocalizedName });                    
                 }
                 catch (Exception e)
                 {

@@ -1,0 +1,59 @@
+﻿@model Notes.App.ViewModels.User.UserEditViewModel
+
+<div id="tabs">
+    <ul>
+        <li><a href="#page1">Основные</a></li>
+        <li><a href="#rolesPage">Роли</a></li>
+    </ul>
+</div>
+<div id="page1">    
+@using (Html.BeginForm("DoEdit", "User", FormMethod.Post, new { @class = "form-horizontal", id = "editUserForm" }))
+{
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="Id" value="@Model.Id" />
+        <div class="form-group">
+            @Html.LabelFor(model => model.Login, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-12">
+                @Html.EditorFor(model => model.Login, new { htmlAttributes = new { @class = "form-control col-md-12" } })
+                @Html.ValidationMessageFor(model => model.Login, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-12">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control col-md-12" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.EMail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-12">
+                @Html.EditorFor(model => model.EMail, new { htmlAttributes = new { @class = "form-control col-md-12" } })
+                @Html.ValidationMessageFor(model => model.EMail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-12">
+                <select class="form-control col-md-12" id="Status">
+                    <option value="0" @((Model.Status == 0) ? "selected" : "")>Активен</option>
+                    <option value="1" @((Model.Status == 1) ? "selected" : "")>Заблокирован</option>
+                </select>
+            </div>
+        </div>
+ }
+</div>
+<div id="rolesPage">
+    <div class="btn">
+        <a href="/User/AddUserRole/" data-id="@Model.Id" class="addrolelink">
+            <img src="@Url.Content("~/Content/images/add32.png")" /> Добавить роль
+        </a>
+    </div>
+   <hr/>
+   <div id="roles"></div>
+</div>
+<script>
+    listRolesForUser(@Model.Id);
+    $(".addrolelink").on("click", addUserRole);
+</script>

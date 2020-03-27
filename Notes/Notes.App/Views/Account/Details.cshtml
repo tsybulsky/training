@@ -3,54 +3,54 @@
 @{
     ViewBag.Title = "Details";
 }
-
-<h2>Текущий пользователь</h2>
-
-<div>    
-    <div class="modal fade"></div>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Role)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Role)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.IsAdmin)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.IsAdmin)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.IsEditor)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.IsEditor)
-        </dd>
-
-    </dl>
+<div>
+    <h6>Текущий пользователь</h6>
+    <div id="tabs">
+        <ul>
+            <li><a href="#page1">Основные</a></li>
+            <li><a href="#page2">Роли</a></li>
+        </ul>
+        <div id="page1">
+            <table class="table-borderless">
+                <tr>
+                    <td class="w-25">Id:</td>
+                    <td>@Html.DisplayFor(model => model.Id)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Login)</td>
+                    <td>@Html.DisplayFor(model => model.Login)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Email)</td>
+                    <td>@Html.DisplayFor(model => model.Email)</td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(model => model.Name)</td>
+                    <td>@Html.DisplayFor(model => model.Name)</td>
+                </tr>
+            </table>
+        </div>
+        <div id="page2">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="w-25">Название</th>
+                        <td>Локализованное название</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var role in Model.Roles)
+                    {
+                        <tr>
+                            <td>@role.RoleName</td>
+                            <td>@role.LocalizedRoleName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Сменить пароль", "ChangePassword") @Html.ActionLink("На главную", "Index", "Home")
-</p>
+<script>
+
+</script>

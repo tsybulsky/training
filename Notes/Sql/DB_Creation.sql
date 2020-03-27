@@ -1,8 +1,12 @@
 USE master
 GO
 
-IF EXISTS(SELECT * FROM sys.sysdatabases WHERE name = 'Notes') 
-  DROP DATABASE Notes
+IF EXISTS(SELECT * FROM sys.sysdatabases WHERE name = 'Notes')
+  BEGIN
+    EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'Notes'
+    ALTER DATABASE Notes SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+    DROP DATABASE Notes
+  END
 GO
 
 CREATE DATABASE Notes ON  ( 
@@ -14,12 +18,18 @@ GO
 USE Notes
 GO
 
+CREATE TABLE dbo.ErrorMessages (
+  Code int NOT NULL PRIMARY KEY CLUSTERED,
+  Message nvarchar(1000))
+GO
+DENY SELECT, INSERT, UPDATE, DELETE ON dbo.ErrorMessages TO Public
+GO
+
 CREATE TABLE dbo.Roles(
   Id int NOT NULL IDENTITY(1,1)
     CONSTRAINT PK_Roles PRIMARY KEY CLUSTERED (Id),
   Name nvarchar(50) NOT NULL,
-  IsAdmin bit,
-  IsEditor bit)
+  LocalizedName nvarchar(50) NOT NULL)
 GO
 
 DENY SELECT, INSERT, UPDATE, DELETE ON dbo.Roles TO Public
@@ -28,15 +38,27 @@ GO
 CREATE TABLE dbo.Users(
   Id int NOT NULL IDENTITY(1,1)
     CONSTRAINT PK_Users PRIMARY KEY CLUSTERED(Id),
-  RoleId int NOT NULL
-    CONSTRAINT FK_Users_RoleId FOREIGN KEY (RoleId) REFERENCES dbo.Roles(Id),
-  Username nvarchar(50) NOT NULL,
-  Email nvarchar(100) NOT NULL,
+  Login nvarchar(50) NOT NULL,
   Password varchar(40) NOT NULL,
+  Email nvarchar(100) NOT NULL,
+  Name nvarchar(100) NULL,
   Status int NOT NULL DEFAULT(0),
   CreatedOnDate  datetime NULL
     CONSTRAINT DF_Users_CreateOnDate DEFAULT(GETDATE()),
+  LastLogin datetime NULL,
   ActivationInfo varchar(100))
+GO
+
+DENY SELECT, INSERT, UPDATE, DELETE ON dbo.Users TO Public
+GO
+
+CREATE TABLE dbo.UserRoles (
+  Id int NOT NULL IDENTITY(1,1)
+    CONSTRAINT PK_UserRoles PRIMARY KEY CLUSTERED(Id),
+  UserId int NOT NULL
+    CONSTRAINT FK_UserRoles_UserId FOREIGN KEY (UserId) REFERENCES dbo.Users(Id),
+  RoleId int NOT NULL
+    CONSTRAINT FK_UserRoles_RoleId FOREIGN KEY (RoleId) REFERENCES dbo.Roles(Id))
 GO
 
 DENY SELECT, INSERT, UPDATE, DELETE ON dbo.Users TO Public
@@ -45,11 +67,11 @@ GO
 SET IDENTITY_INSERT dbo.Roles ON
 GO
 INSERT INTO dbo.Roles (
-  Id, Name, IsAdmin, IsEditor)
+  Id, Name, LocalizedName)
 VALUES (
-  1, 'Администраторы', 1, 1), (
-  2, 'Редакторы', 0, 1), (
-  3, 'Рядовые пользователи', 0, 0)
+  1, 'admin', 'Администраторы'), (
+  2, 'editor', 'Редакторы'), (
+  3, 'user', 'Пользователи')
 GO
 
 SET IDENTITY_INSERT dbo.Roles OFF
@@ -61,22 +83,29 @@ SET IDENTITY_INSERT dbo.Users ON
 GO
 
 INSERT INTO dbo.Users (
-  Id, UserName, 
-  Password, Email, RoleId, 
-  ActivationInfo)
+  Id, Login, Password, 
+  Email)
 VALUES (
-  1, 'admin', 
-  'D033E22AE348AEB5660FC2140AEC35850C4DA997', 'admin@domain.com', 1, 
-  NULL), (
-  2, 'editor', 
-  'AB41949825606DA179DB7C89DDCEDCC167B64847', 'editor@domain.com', 2, 
-  NULL), (
-  3, 'user', 
-  'DA39A3EE5E6B4B0D3255BFEF95601890AFD80709', 'user@domain.com', 3, 
-  NULL)
+  1, 'admin',	--default password: admin
+  'D033E22AE348AEB5660FC2140AEC35850C4DA997', 'admin@domain.com'), (
+  2, 'editor',	--default password: editor
+  'AB41949825606DA179DB7C89DDCEDCC167B64847', 'editor@domain.com'), (
+  3, 'user',	--default password: <blank>
+  'DA39A3EE5E6B4B0D3255BFEF95601890AFD80709', 'user@domain.com')
 GO
 
 SET IDENTITY_INSERT dbo.Users OFF
+GO
+
+INSERT INTO dbo.UserRoles (
+  UserId, RoleId)
+VALUES (
+  1, 1), (
+  1, 2), (
+  1, 3), (
+  2, 2), (
+  2, 3), (
+  3, 3)
 GO
 
 DBCC CHECKIDENT(Users,RESEED)
@@ -106,7 +135,8 @@ CREATE TABLE dbo.Notes (
     CONSTRAINT FK_Notes_CategoryId FOREIGN KEY (CategoryId) REFERENCES dbo.Categories(Id),
   OwnerId int NOT NULL
     CONSTRAINT FK_Notes_OwnerId FOREIGN KEY (OwnerId) REFERENCES dbo.Users(Id),
-  Picture varbinary(max) NULL)
+  Picture varbinary(max) NULL,
+  PictureMimeType nvarchar(100) NULL)
 GO
 
 DENY SELECT, INSERT, UPDATE, DELETE ON dbo.Categories TO Public
@@ -134,14 +164,22 @@ GO
 
 CREATE VIEW dbo.GetUsers 
 AS
-  SELECT 
-    U.*, R.Name as RoleName
-  FROM
-    dbo.Users U
-	  INNER JOIN dbo.Roles R ON U.RoleId = R.Id
+  SELECT *, CASE WHEN Name IS NULL THEN Login ELSE Name END As NameOrLogin FROM dbo.Users
 GO
 
 GRANT SELECT ON dbo.GetUsers TO Public
+GO
+
+CREATE VIEW dbo.GetUserRoles
+AS
+  SELECT
+    A.*, R.Name as RoleName, R.LocalizedName as LocalizedRoleName
+  FROM
+    dbo.UserRoles A
+	  INNER JOIN dbo.Roles R ON A.RoleId = R.Id
+GO
+
+GRANT SELECT ON dbo.GetUserRoles TO Public
 GO
 
 CREATE VIEW dbo.GetCategories
@@ -160,28 +198,35 @@ GO
 
 CREATE VIEW dbo.GetNoteReferences
 AS
-  SELECT * FROM dbo.NoteReferences
+  SELECT 
+	A.*, b.Title as ReferenceTitle 
+  FROM 
+    dbo.NoteReferences A 
+	  INNER JOIN dbo.Notes B ON A.ReferenceId = b.Id
 GO
 
 CREATE PROCEDURE dbo.SaveRole
   @Id int OUTPUT,
   @Name nvarchar(50),
-  @IsAdmin bit,
-  @IsEditor bit
+  @LocalizedName nvarchar(50)
 AS
   BEGIN
     DECLARE @Result int
     IF EXISTS(SELECT * FROM dbo.Roles WHERE Id = @Id)
 	  BEGIN
-	    UPDATE dbo.Roles SET Name = @Name, IsAdmin = @IsAdmin, IsEditor = @IsEditor WHERE Id = @Id
+	    IF EXISTS(SELECT * FROM dbo.Roles WHERE (Name = @Name)AND(Id <> @Id))
+		  RETURN -1	
+	    UPDATE dbo.Roles SET Name = @Name, LocalizedName = @LocalizedName
 		SELECT @Result = @@ROWCOUNT		
 	  END
 	ELSE
 	  BEGIN
+	    IF EXISTS(SELECT * FROM dbo.Roles WHERE (Name = @Name))
+		  RETURN -1
 	    INSERT INTO dbo.Roles (
-		  Name, IsAdmin, IsEditor)
+		  Name, LocalizedName)
         VALUES (
-		  @Name, @IsAdmin, @IsEditor)
+		  @Name, @LocalizedName)
 		SELECT @Id = SCOPE_IDENTITY(), @Result = @@ROWCOUNT
 	  END
 	RETURN @Result
@@ -196,8 +241,8 @@ CREATE PROCEDURE dbo.DeleteRole
 AS
   BEGIN
     DECLARE @Result int
-	IF EXISTS(SELECT * FROM dbo.Users WHERE RoleId = @Id)
-	  SET @Result = 0
+	IF EXISTS(SELECT * FROM dbo.UserRoles WHERE RoleId = @Id)
+	  RETURN -4
 	ELSE
 	  BEGIN
 	    DELETE FROM dbo.Roles WHERE Id = @Id
@@ -211,33 +256,37 @@ GRANT EXECUTE ON dbo.DeleteRole TO Public
 GO
 
 CREATE PROCEDURE dbo.SaveUser
-  @Id int OUTPUT,
-  @RoleId int,
-  @UserName nvarchar(50),
-  @Email nvarchar(50),
+  @Id int OUTPUT,  
+  @Login nvarchar(50),
   @Password varchar(40),
+  @Email nvarchar(50),  
+  @Name nvarchar(100),
   @Status int
 AS
   BEGIN
     DECLARE @Result int
     IF EXISTS(SELECT * FROM dbo.Users WHERE Id = @Id)
 	  BEGIN
+	    IF EXISTS(SELECT * FROM dbo.Users WHERE (Login = @Login)AND(Id <> @Id))
+		  RETURN -2
+		IF EXISTS(SELECT * FROM dbo.Users WHERE (Email = @Email)AND(Id <> @Id))
+		  RETURN -3
 	    UPDATE dbo.Users SET 
-		  RoleId = @RoleId, UserName = @UserName, Email = @Email,
-		  Password = @Password, Status = @Status
+		  Login = @Login, Email = @Email, Name = @Name,
+		  Status = @Status
 		WHERE 
 		  Id = @Id
-		SET @Result = @@ROWCOUNT
+		SET @Result = @@ERROR
 	  END
 	ELSE
 	  BEGIN
 	    INSERT INTO dbo.Users (
-		  RoleId, UserName, Email,
-		  Password, Status, CreatedOnDate)
+		  Login, Password, Email,
+		  Name, Status, CreatedOnDate)
 		VALUES (
-		  @RoleId, @UserName, @Email,
-		  @Password, @Status, GETDATE())
-		SELECT @Result = @@ROWCOUNT, @Id = SCOPE_IDENTITY()
+		  @Login, @Password, @Email,
+		  @Name, @Status, GETDATE())
+		SELECT @Result = @@ERROR, @Id = SCOPE_IDENTITY()		
 	  END
 	RETURN @Result
   END
@@ -265,6 +314,53 @@ GO
 GRANT EXECUTE ON dbo.DeleteUser TO Public
 GO
 
+CREATE PROCEDURE dbo.SaveUserRole
+  @Id int OUTPUT,
+  @UserId int,
+  @RoleId int
+AS
+  BEGIN
+    DECLARE @Result int = 0
+    IF EXISTS(SELECT * FROM dbo.UserRoles WHERE Id = @Id)
+	  BEGIN
+	    IF EXISTS(SELECT * FROM dbo.UserRoles WHERE (Id <> @Id)AND(UserId = @UserId)AND(RoleId = @RoleId))
+		  RETURN -5
+		UPDATE dbo.UserRoles SET RoleId = @RoleId, UserId = @UserId WHERE Id = @Id
+		SET @Result = @@ERROR
+	  END
+	ELSE
+	  BEGIN
+	    IF EXISTS(SELECT * FROM dbo.UserRoles WHERE (UserId = @UserId)AND(RoleId = @RoleId))
+		  RETURN -5
+		INSERT INTO dbo.UserRoles (
+		  UserId, RoleId) 
+		VALUES (
+		  @UserId, @RoleId)
+		SET @Result = @@ERROR
+	  END
+	RETURN @Result
+  END
+GO
+
+GRANT EXECUTE ON dbo.SaveUserRole TO Public
+GO
+
+CREATE PROCEDURE dbo.DeleteUserRole
+  @id int
+AS
+  BEGIN
+    DECLARE @Result int, @RowCount int 
+	DELETE FROM dbo.UserRoles WHERE Id = @Id
+	SELECT @Result = @@ERROR, @RowCount = @@ROWCOUNT
+	IF (@Result = 0)AND(@RowCount = 0)
+	  SET @Result = -6
+	RETURN @Result
+  END
+GO
+
+GRANT EXECUTE ON dbo.DeleteUserRole TO Public
+GO
+
 CREATE PROCEDURE dbo.UpdatePasswordUser
   @Id int,
   @Password varchar(40)
@@ -283,16 +379,27 @@ GO
 GRANT EXECUTE ON dbo.UpdatePasswordUser TO Public
 GO
 
+CREATE PROCEDURE dbo.UpdateLoginTime
+  @Id int
+AS
+  BEGIN
+    UPDATE dbo.Users SET LastLogin = GETDATE() WHERE Id = @Id
+  END
+GO
+
+GRANT EXECUTE ON dbo.UpdateLoginTime TO Public
+GO
+
 CREATE PROCEDURE dbo.SaveCategory
   @Id int OUTPUT,
-  @Title nvarchar(1000)
+  @Name nvarchar(1000)
 AS
   BEGIN
     DECLARE @Result int
 	IF EXISTS(SELECT * FROM dbo.Categories WHERE Id = @Id)
 	  BEGIN
 	    UPDATE dbo.Categories SET
-		  Name = @Title 
+		  Name = @Name 
 		WHERE
 		  Id = @Id
 		SET @Result = @@ROWCOUNT
@@ -302,7 +409,7 @@ AS
 	    INSERT INTO dbo.Categories (
 		  Name)
 		VALUES (
-		  @Title)
+		  @Name)
 		SELECT @Result = @@ROWCOUNT, @Id = SCOPE_IDENTITY()
 	  END
     RETURN @Result
@@ -318,15 +425,9 @@ AS
    BEGIN 
      DECLARE @Result int
 	 IF EXISTS(SELECT * FROM dbo.Notes WHERE CategoryId = @Id)
-	   BEGIN
-	     SET @Result = 0
-	   END
-	 ELSE
-	   BEGIN
-	     DELETE FROM dbo.Categories WHERE Id = @Id
-		 SET @Result = @@ROWCOUNT
-	   END 
-	 RETURN @Result 
+	   RETURN -5
+     DELETE FROM dbo.Categories WHERE Id = @Id
+     RETURN @@ERROR
    END
  GO
     
@@ -339,7 +440,8 @@ CREATE PROCEDURE dbo.SaveNote
   @Description nvarchar(max),
   @CategoryId int,
   @OwnerId int,
-  @Picture varbinary(max)
+  @Picture varbinary(max),
+  @PictureMimeType varchar(100)
 AS
   BEGIN
     DECLARE @Result int
@@ -347,7 +449,7 @@ AS
 	  BEGIN
 	    UPDATE dbo.Notes SET 
 		  Title = @Title, Description = @Description, CategoryId = @CategoryId,
-		  OwnerId = @OwnerId, Picture = @Picture
+		  OwnerId = @OwnerId, Picture = @Picture, PictureMimeType = @PictureMimeType
 		WHERE
 		  Id  = @Id
 		SET @Result = @@ROWCOUNT
@@ -356,10 +458,12 @@ AS
 	  BEGIN
 	    INSERT INTO dbo.Notes (
 		  Title, Description, CategoryId,
-		  OwnerId, Picture, CreationDate)
+		  OwnerId, Picture, PictureMimeType,
+		  CreationDate)
 		VALUES (
 		  @Title, @Description, @CategoryId,
-		  @OwnerId, @Picture, GETDATE())
+		  @OwnerId, @Picture, @PictureMimeType,
+		  GETDATE())
 		SELECT @Result = @@ROWCOUNT, @Id = SCOPE_IDENTITY()
 	  END
 	RETURN @Result 
@@ -389,7 +493,17 @@ GO
 GRANT EXECUTE ON dbo.DeleteNote TO Public
 GO
 
-  
+ INSERT INTO dbo.ErrorMessages (
+   Code, Message)
+VALUES (
+  -1, 'Роль с таким именем уже существует в базе данных'), (
+  -2, 'Пользователь с таким логином уже зарегистрирован'), (
+  -3, 'Пользователь с таким email уже зарегистрирован'), (
+  -4, 'Нельзя удалить роль пока есть пользователи этой роли'), (
+  -5, 'У пользователя уже имеется данная роль'), (
+  -6, 'Роль пользователя не найдена в базе данных')
+GO
+
 INSERT INTO dbo.Categories (
   Name)
 VALUES (
@@ -413,3 +527,5 @@ VALUES (
   'Заказать детали крепления стола станка, заказать конструкционный профиль', 6, 1), (
   'Командировка в Минск',
   '3 апреля 2020 надо съездить в Минск в головную организации с вопросами по мониторингу', 5, 1)
+
+

@@ -6,9 +6,9 @@ namespace Notes.BLL.Services
     {
         IEnumerable<UserDTO> GetList();
         UserDTO GetItemById(int id);        
-        bool Delete(int id);
-        bool Update(UserDTO user);
-        bool Create(UserDTO user);
+        void Delete(int id);
+        void Update(UserDTO user);
+        void Create(UserDTO user);
         LoggedUser Login(string login, string password);
         void Logout();
         void ChangePassword(int id, string oldPassword, string newPassword);

@@ -1,68 +1,46 @@
-﻿@model Notes.BLL.DTOModels.NoteDTO
-
-<div>
-    <h4>NoteDTO</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreationDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreationDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CategoryId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CategoryId)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.OwnerId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.OwnerId)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Owner)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Owner)
-        </dd>
-
-    </dl>
-</div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+﻿@model Notes.App.ViewModels.Note.NoteDetailViewModel
+@using Notes.App.Helpers
+    <div id="tabpanel">
+        <ul>
+            <li><a href="#page1">Основные</a></li>
+            <li><a href="#page2">Ссылки</a></li>
+        </ul>
+    </div>
+    <div id="page1">
+        <table class="table-borderless">
+            <tr>
+                <td class="w-25">@Html.DisplayNameFor(model => model.Category)</td>
+                <td>@Html.DisplayFor(model => model.Category)</td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(model => model.CreationDate)</td>
+                <td>@Html.DisplayFor(model => model.CreationDate)</td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(model => model.ActualTill)</td>
+                <td>@Html.DisplayFor(model => model.ActualTill)</td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(model => model.Title)</td>
+                <td>@Html.DisplayFor(model => model.Title)</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.ImageFor(@Model.Image)
+                    @Html.DisplayFor(model => model.Description)
+                </td>                
+            </tr>
+        </table>
+    </div>
+    <div id="page2">
+        <div class="row">
+            <div class="btn"><a href="@Url.Action("CreateReference","Note")"><img src="@Url.Content("~/Content/images/add32.png")" /> Создать</a></div>
+            <div class="btn"><a href="@Url.Action("DeleteReference","Note")"><img src="@Url.Content("~/Content/images/delete32.png")"/> Удалить</a></div>
+        </div>
+        <ul>
+            @foreach (var link in @Model.References)
+            {
+                <li><a href="/Note/Details/@link.Id" class="details">@link.ReferenceTitle</a></li>
+                }
+            </ul>
+    </div>
