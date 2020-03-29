@@ -10,9 +10,9 @@ namespace Notes.BLL
 {
     public class UserPrinciple : LoggedUser, IPrincipal
     {
-        public const string ADMIN_ROLE_NAME = "Администраторы";
-        public const string EDITOR_ROLE_NAME = "Пользователи";
-        public const string USER_ROLE_NAME = "Пользователи";
+        public const string ADMIN_ROLE_NAME = "admin";
+        public const string EDITOR_ROLE_NAME = "editor";
+        public const string USER_ROLE_NAME = "user";
 
         public UserPrinciple(string username): base()
         {
@@ -24,9 +24,8 @@ namespace Notes.BLL
 
         public bool IsInRole(string role)
         {
-            return true;
-            /*UserRoleDTO userRole = Roles.FirstOrDefault(r => r.RoleName.ToLower() == role.ToLower());
-            return userRole != null;*/
+            UserRoleDTO userRole = Roles.FirstOrDefault(ur => ur.RoleName.ToLower() == role);
+            return userRole != null;
         }
     }
 }

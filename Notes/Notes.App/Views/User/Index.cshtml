@@ -52,6 +52,9 @@
                     <a href="@Url.Action("Edit", "User")" data-id="@user.Id" class="editlink">
                         <img src="@Url.Content("~/Content/images/edit32.png")" />
                     </a>
+                    <a href="@Url.Action("AdminChangePassword", "User")" data-id="@user.Id" class="cplink">
+                        <img src="@Url.Content("~/Content/image/cpwd32.png")" />
+                    </a>
                     <a href="@Url.Action("Delete", "User")" data-id="@user.Id" class="deletelink">
                         <img src="@Url.Content("~/Content/images/delete32.png")" />
                     </a>

@@ -8,6 +8,7 @@ using Notes.BLL.DTOModels;
 using Notes.App.ViewModels.User;
 using Notes.BLL;
 using Notes.Common.Exceptions;
+using Notes.Common;
 
 namespace Notes.App.Controllers
 {
@@ -96,6 +97,56 @@ namespace Notes.App.Controllers
             }
         }
 
+        public ActionResult Create()
+        {
+            CreateUserViewModel model = new CreateUserViewModel();
+            model.Roles = _bl.Roles.GetList();
+            model.Status = 0;
+            model.Login = "NewUser";
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        public ActionResult DoCreate(CreateUserViewModel model)
+        {
+            JsonResult result = new JsonResult();
+            if ((model != null)&& ModelState.IsValid)
+            {
+                try
+                {
+                    UserDTO user = new UserDTO()
+                    {
+                        Login = model.Login,
+                        Password = PasswordHash.HashString(model.Password),
+                        Name = model.Name,
+                        Email = model.EMail,
+                        Status = model.Status
+                    };
+                    _bl.Users.Create(user);
+                    //?? UserRoles update. Is "user" variable has valid property "Id"?
+                    //UserRoleDTO userRole = new UserRoleDTO()
+                    //{
+                    //  UserId = user.Id,
+                    //  RoleId = model.RoleId
+                    //}
+                    //_bl.UserRoles.Create(userRole)
+                    result.Data = new { Code = 0, Message = "OK" };
+                }
+                catch (NoteCustomException e)
+                {
+                    result.Data = new { Code = -1, e.Message };
+                }
+                catch(Exception e)
+                    {
+                    result.Data = new { Code = -2, Message = $"Системная ошибка: {e.Message}" };
+                }
+            }
+            else
+            {
+                result.Data = new { Code = -3, Message = "Неверные параметры" };
+            }
+            return result;
+        }
         [HttpPost]
         public ActionResult DoEdit(UserEditViewModel model)
         {

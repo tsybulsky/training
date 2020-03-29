@@ -159,6 +159,7 @@
     <Compile Include="ViewModels\Note\NoteIndexViewModel.cs" />
     <Compile Include="ViewModels\Note\NoteReferenceViewModel.cs" />
     <Compile Include="ViewModels\User\AddUserRoleViewModel.cs" />
+    <Compile Include="ViewModels\User\CreateUserViewModel.cs" />
     <Compile Include="ViewModels\User\UserDetailViewModel.cs" />
     <Compile Include="ViewModels\User\UserEditViewModel.cs" />
     <Compile Include="ViewModels\User\UserIndexViewModel.cs" />
@@ -323,6 +324,7 @@
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\AddUserRole.cshtml" />
+    <Content Include="Views\User\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

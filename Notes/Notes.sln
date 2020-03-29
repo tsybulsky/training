@@ -18,8 +18,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.DI", "Notes.DI\Notes.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.BLL", "Notes.BLL\Notes.BLL.csproj", "{C4A01280-876E-4B37-9222-184189626004}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes.WebApi", "Notes.WebApi\Notes.WebApi.csproj", "{98293B28-2149-4C45-9CA9-F2F608510FC6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,10 +48,6 @@ Global
 		{C4A01280-876E-4B37-9222-184189626004}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4A01280-876E-4B37-9222-184189626004}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4A01280-876E-4B37-9222-184189626004}.Release|Any CPU.Build.0 = Release|Any CPU
-		{98293B28-2149-4C45-9CA9-F2F608510FC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{98293B28-2149-4C45-9CA9-F2F608510FC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{98293B28-2149-4C45-9CA9-F2F608510FC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{98293B28-2149-4C45-9CA9-F2F608510FC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

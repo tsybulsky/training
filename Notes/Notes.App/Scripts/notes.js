@@ -624,8 +624,70 @@ function deleteUserRole(e) {
 }
 
 function createUser(e) {
-    e.preventDefault();
-    message("Создание пользователя в разработке");
+    if (e !== undefined) {
+        e.preventDefault();
+    }
+    var dlg = $("<div></div>")
+        .addClass("dialog")
+        .appendTo("body")
+        .dialog({
+            title: "Создание пользователя",
+            modal: true,
+            closeOnEscape: true,
+            width: "30%",
+            autoOpen: false,
+            buttons:
+                [
+                    {
+                        text: "Создать",
+                        click: function () {
+                            if (!$("#createUserForm").valid())
+                                return;
+                            var password = $("#Password").val();
+                            var confirmPassword = $("#ConfirmPassword").val();
+                            if (password != confirmPassword) {
+                                $("#save-error").text("Пароли должны совпадать");
+                                dlg.remove();
+                            }
+                            $.ajax({
+                                url: "/User/DoCreate",
+                                method: "POST",
+                                data: {
+                                    Login: $("#Login").val(),
+                                    Password: password,
+                                    ConfirmPassword: confirmPassword,
+                                    Name: $("#Name").val(),
+                                    EMail: $("#EMail").val(),
+                                    Status: $("#Status").val(),
+                                    Role: $("#Role").val()                                  
+
+                                },
+                                success: function (data) {
+                                    if (data.Code == 0) {
+                                        message("Пользователь создан");
+                                        dlg.remove();
+                                    } else {
+                                        $("#save-error").text(data.Message);
+                                    }
+                                }
+                            })
+                        }
+                    },
+                    {
+                        text: "Закрыть",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+        })
+        .load("/User/Create", function (response, status, xhr) {
+            if (status == "error")
+                $(this).html("Error: " + response);
+            else {
+                dlg.dialog("open");
+            }
+        });
 }
 
 function showUserDetails(e) {

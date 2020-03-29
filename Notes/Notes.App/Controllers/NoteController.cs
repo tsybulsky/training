@@ -127,7 +127,7 @@ namespace Notes.App.Controllers
                     else
                     {
                         note.Image = null;
-                        note.PictureMimeType = null;
+                        note.PictureMimeType = "";
                     }
                     _bl.Notes.Create(note);
                     return RedirectToAction(nameof(Index));
