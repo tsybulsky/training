@@ -1,8 +1,5 @@
-﻿using System;
+﻿using Notes.BLL.DTOModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Notes.BLL.DTOModels;
 
 namespace Notes.App.ViewModels.Note
 {

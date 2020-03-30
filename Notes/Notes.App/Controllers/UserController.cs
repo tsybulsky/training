@@ -225,7 +225,7 @@ namespace Notes.App.Controllers
                 {
                     result.Data = new { Code = -1, Message = e.Message };
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     result.Data = new { Code = -2, Message = $"Системная ошибка: " };
                 }

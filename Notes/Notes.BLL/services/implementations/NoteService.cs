@@ -103,7 +103,7 @@ namespace Notes.BLL.Services
             }
         }
 
-        public IEnumerable<NoteDTO> GetNotesByCategoryId(int id, int pageNo = 0, int pageSize = 0)
+        public IEnumerable<NoteDTO> GetNotesByCategoryId(int id, int pageNo = 1, int pageSize = 0)
         {
             try
             {
@@ -123,18 +123,68 @@ namespace Notes.BLL.Services
                 throw new NoteCustomException(e.Message);
             }
         }
-
         
-        public IEnumerable<NoteDTO> SearchbyDate(DateTime date, int pageNo = 0, int pageSize = 0)
+        public IEnumerable<NoteDTO> SearchByDate(DateTime date, int pageNo = 1, int pageSize = 0)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<Note> notes;
+                if (pageSize < 0)
+                    pageSize = 0;
+                notes = _db.Notes.SearchByDate(date, pageNo, pageSize);
+                IMapper mapper = new MapperConfiguration(c => c.CreateMap<Note, NoteDTO>()).CreateMapper();
+                return mapper.Map<IEnumerable<Note>, IEnumerable<NoteDTO>>(notes);
+            }
+            catch (NoteCustomException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new NoteCustomException(e.Message);
+            }
         }
 
-        public IEnumerable<NoteDTO> SearchByName(string name, int pageNo = 0, int pageSize = 0)
+        public IEnumerable<NoteDTO> SearchByName(string name, int pageNo = 1, int pageSize = 0)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<Note> notes;
+                if (pageSize < 0)
+                    pageSize = 0;
+                notes = _db.Notes.SearchByName(name, pageNo, pageSize);
+                IMapper mapper = new MapperConfiguration(c => c.CreateMap<Note, NoteDTO>()).CreateMapper();
+                return mapper.Map<IEnumerable<Note>, IEnumerable<NoteDTO>>(notes);
+            }
+            catch (NoteCustomException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new NoteCustomException(e.Message);
+            }
         }
-
+        public IEnumerable<NoteDTO> SearchByCategoryName(string categoryName, int pageNo = 1, int pageSize=0)
+        {
+            try
+            {
+                IEnumerable<Note> notes;
+                if (pageSize < 0)
+                    pageSize = 0;
+                notes = _db.Notes.SearchByCategoryName(categoryName, pageNo, pageSize);
+                IMapper mapper = new MapperConfiguration(c => c.CreateMap<Note, NoteDTO>()).CreateMapper();
+                return mapper.Map<IEnumerable<Note>, IEnumerable<NoteDTO>>(notes);
+            }
+            catch (NoteCustomException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new NoteCustomException(e.Message);
+            }
+        }
         public void Update(NoteDTO note)
         {
             if (note != null)

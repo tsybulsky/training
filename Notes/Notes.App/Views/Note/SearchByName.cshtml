@@ -1,0 +1,45 @@
+﻿@model Notes.App.ViewModels.Note.NoteSearchByNameViewModel
+@using Notes.BLL
+
+@{
+    ViewBag.Title = "Заметки. Поиск по названию";
+}
+
+    <div class="row h-100">
+        <div class="col-md-2 h-100">
+            <div>
+                @foreach (var item in Model.Categories)
+                {
+                    @Html.ActionLink(item.Name, "ByCategory", "Note", new { Id = item.Id }, null)<br />
+                }
+            </div>
+        </div>
+        <div class="col-md-10 h-100" id="content">
+            <div>
+                Поиск заметок по названию содержащему "@Model.SearchText"
+            </div>
+            <div class="btn"><a href="/Note/Create" class="createlink" dialog-title="Создание заметки"><img src="@Url.Content("/Content/images/add32.png")" /> Создать</a> </div>
+            <hr />
+            @foreach (var item in Model.Notes)
+            {
+                <div class="card w-50">
+                    <div class="card-header">
+                        @Html.ActionLink(item.Title, "Details", "Note", new { Id = item.Id },
+                            new { @class = "details", dialog_title = "Подробности" })
+                    </div>
+                    <div class="card-body">
+                        @item.Description
+                    </div>
+                    @if ((HttpContext.Current.User != null) && (HttpContext.Current.User as UserPrinciple != null) &&
+                        (HttpContext.Current.User.IsInRole("admin") || HttpContext.Current.User.IsInRole("editor") ||
+                        (((UserPrinciple)(HttpContext.Current.User)).Id == item.OwnerId)))
+                    {
+                        <div class="btn-toolbar">
+                            <a href="/Note/Edit/@item.Id" class="editlink"><img src="@Url.Content("/Content/images/edit32.png")" /></a>
+                            <a href="/Note/Delete/@item.Id" class="deletelink"><img src="@Url.Content("/Content/images/delete32.png")" /></a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>

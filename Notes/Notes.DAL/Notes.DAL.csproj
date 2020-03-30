@@ -190,6 +190,7 @@
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Implementations\RoleRepository.cs" />
     <Compile Include="Repositories\Implementations\UserRoleRepository.cs" />
+    <Compile Include="Repositories\interfaces\INoteRepository.cs" />
     <Compile Include="Repositories\interfaces\IUserRepository.cs" />
     <Compile Include="Repositories\interfaces\IUserRoleRepository.cs" />
   </ItemGroup>

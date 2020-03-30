@@ -1,11 +1,10 @@
-﻿@model Notes.App.ViewModels.Note.NoteIndexViewModel
+﻿@model Notes.App.ViewModels.Note.NoteSearchByDateViewModel
 @using Notes.BLL
 
 @{
-    ViewBag.Title = "Заметки. Записная книжка";
+    ViewBag.Title = "Заметки. Поиск по дате";
 }
 
-<h4>Заметки</h4>
 <div class="row h-100">
     <div class="col-md-2 h-100">
         <div>
@@ -16,6 +15,9 @@
         </div>
     </div>
     <div class="col-md-10 h-100" id="content">
+        <div>
+            Поиск заметок за "@Model.SearchDate"
+        </div>
         <div class="btn"><a href="/Note/Create" class="createlink" dialog-title="Создание заметки"><img src="@Url.Content("/Content/images/add32.png")" /> Создать</a> </div>
         <hr />
         @foreach (var item in Model.Notes)
@@ -28,7 +30,7 @@
                 <div class="card-body">
                     @item.Description
                 </div>
-                @if ((HttpContext.Current.User != null)&&(HttpContext.Current.User as UserPrinciple != null)&&
+                @if ((HttpContext.Current.User != null) && (HttpContext.Current.User as UserPrinciple != null) &&
                     (HttpContext.Current.User.IsInRole("admin") || HttpContext.Current.User.IsInRole("editor") ||
                     (((UserPrinciple)(HttpContext.Current.User)).Id == item.OwnerId)))
                 {
@@ -40,25 +42,4 @@
             </div>
         }
     </div>
-    <div class="col-md-2 h-100">
-  @using (Html.BeginForm("Search", "Note", FormMethod.Post))
-  {
-      <label class="form-control-plaintext">Поиск</label>
-      <label>Искать по названию</label><br/>
-      <input type="radio" value="0" /><br/>
-      <input type="text" id="searchText"/><br/>            
-      <input type="submit" value="Найти" onclick="doSearch();"/>
-  }
-        }
-    </div>
 </div>
-
-<script>
-    $(document).ready(function () {
-        $.ajaxSetup({ cache: false });
-        $(".details").on("click", showNoteDetails)
-        $(".createlink").on("click", createNote);
-        $(".editlink").on("click", editNote);
-        $(".deletelink").on("click", deleteNote);
-    });
-</script>

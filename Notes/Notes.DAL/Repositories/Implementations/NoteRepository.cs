@@ -5,10 +5,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using Notes.NoteMappers;
+using Notes.DAL.Repositories.Interfaces;
 
 namespace Notes.DAL.Repositories.Implementations
 {
-    public class NoteRepository : CustomRepository<Note>
+    public class NoteRepository : CustomRepository<Note>, INoteRepository
     {
         public NoteRepository(IDbConnection db): base (db)
         {
@@ -148,6 +149,113 @@ namespace Notes.DAL.Repositories.Implementations
                     {
                         command.CommandText += $" OFFSET {(pageNo - 1) * pageSize} ROWS FETCH FIRST {pageSize} ROWS ONLY ";
                     }                    
+                    List<Note> items = new List<Note>();
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        DataTable table = reader.GetSchemaTable();
+                        INotesDbMapper mapper = new NotesDbMapper(typeof(Note), table);
+                        while (reader.Read())
+                        {
+                            items.Add(mapper.Map<Note>(reader));
+                        }
+                    }
+                    return items;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new NoteDataException(e.Message);
+            }
+        }
+
+        public IEnumerable<Note> SearchByName(string searchText, int pageNo = 1, int pageSize = 0)
+        {
+            searchText = searchText.Replace("%", "").Replace("_", "");
+            try
+            {
+                int count = GetTotalCount();
+                if ((pageNo - 1) * pageSize > count)
+                {
+                    throw new NotePageDoesntExistsException(pageNo);
+                }
+                using (IDbCommand command = _db.CreateCommand())
+                {
+                    command.CommandText = $"SELECT * FROM {_viewName} WHERE Title LIKE '%{searchText}%' ORDER BY Id";
+                    if (pageSize > 0)
+                    {
+                        command.CommandText += $" OFFSET {(pageNo - 1) * pageSize} ROWS FETCH FIRST {pageSize} ROWS ONLY ";
+                    }
+                    List<Note> items = new List<Note>();
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        DataTable table = reader.GetSchemaTable();
+                        INotesDbMapper mapper = new NotesDbMapper(typeof(Note), table);
+                        while (reader.Read())
+                        {
+                            items.Add(mapper.Map<Note>(reader));
+                        }
+                    }
+                    return items;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new NoteDataException(e.Message);
+            }
+        }
+
+        public IEnumerable<Note> SearchByCategoryName(string categoryName, int pageNo = 1, int pageSize = 0)
+        {
+            categoryName = categoryName.Replace("%", "").Replace("_", "");
+            try
+            {
+                int count = GetTotalCount();
+                if ((pageNo - 1) * pageSize > count)
+                {
+                    throw new NotePageDoesntExistsException(pageNo);
+                }
+                using (IDbCommand command = _db.CreateCommand())
+                {
+                    command.CommandText = $"SELECT A.* FROM {_viewName} A INNER JOIN dbo.GetCategories C ON c.Id = A.CategoryId WHERE C.Name LIKE '%{categoryName}%' ORDER BY Id";
+                    if (pageSize > 0)
+                    {
+                        command.CommandText += $" OFFSET {(pageNo - 1) * pageSize} ROWS FETCH FIRST {pageSize} ROWS ONLY ";
+                    }
+                    List<Note> items = new List<Note>();
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        DataTable table = reader.GetSchemaTable();
+                        INotesDbMapper mapper = new NotesDbMapper(typeof(Note), table);
+                        while (reader.Read())
+                        {
+                            items.Add(mapper.Map<Note>(reader));
+                        }
+                    }
+                    return items;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new NoteDataException(e.Message);
+            }
+        }
+
+        public IEnumerable<Note> SearchByDate(DateTime date, int pageNo = 1, int pageSize = 0)
+        {
+            try
+            {
+                int count = GetTotalCount();
+                if ((pageNo - 1) * pageSize > count)
+                {
+                    throw new NotePageDoesntExistsException(pageNo);
+                }
+                using (IDbCommand command = _db.CreateCommand())
+                {
+                    command.CommandText = $"SELECT * FROM {_viewName} WHERE CreationDate BETWEEN '{date}' AND '{date.AddDays(1).AddSeconds(-1)}' ORDER BY Id";
+                    if (pageSize > 0)
+                    {
+                        command.CommandText += $" OFFSET {(pageNo - 1) * pageSize} ROWS FETCH FIRST {pageSize} ROWS ONLY ";
+                    }
                     List<Note> items = new List<Note>();
                     using (IDataReader reader = command.ExecuteReader())
                     {

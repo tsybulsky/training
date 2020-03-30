@@ -14,8 +14,10 @@ namespace Notes.BLL.Services
         void Delete(int id);
         void Update(NoteDTO note);
         void Create(NoteDTO note);
-        IEnumerable<NoteDTO> GetNotesByCategoryId(int Id, int pageNo=0, int pageSize=0);
-        IEnumerable<NoteDTO> SearchByName(string name, int pageNo = 0, int pageSize = 0);
-        IEnumerable<NoteDTO> SearchbyDate(DateTime date, int pageNo = 0, int pageSize = 0);
+        IEnumerable<NoteDTO> GetNotesByCategoryId(int id, int pageNo=1, int pageSize=0);
+        IEnumerable<NoteDTO> SearchByName(string name, int pageNo = 1, int pageSize = 0);
+        IEnumerable<NoteDTO> SearchByDate(DateTime date, int pageNo = 1, int pageSize = 0);
+        IEnumerable<NoteDTO> SearchByCategoryName(string categoryName, int pageNo = 1, int pageSize = 0);
+        
     }
 }

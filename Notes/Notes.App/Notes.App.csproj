@@ -158,6 +158,9 @@
     <Compile Include="ViewModels\Note\NoteEditViewModel.cs" />
     <Compile Include="ViewModels\Note\NoteIndexViewModel.cs" />
     <Compile Include="ViewModels\Note\NoteReferenceViewModel.cs" />
+    <Compile Include="ViewModels\Note\NoteSearchByCategoryNameViewModel.cs" />
+    <Compile Include="ViewModels\Note\NoteSearchByDateViewModel.cs" />
+    <Compile Include="ViewModels\Note\NoteSearchByNameViewModel.cs" />
     <Compile Include="ViewModels\User\AddUserRoleViewModel.cs" />
     <Compile Include="ViewModels\User\CreateUserViewModel.cs" />
     <Compile Include="ViewModels\User\UserDetailViewModel.cs" />
@@ -325,6 +328,9 @@
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\AddUserRole.cshtml" />
     <Content Include="Views\User\Create.cshtml" />
+    <Content Include="Views\Note\SearchByName.cshtml" />
+    <Content Include="Views\Note\SearchByCategoryName.cshtml" />
+    <Content Include="Views\Note\SearchByDate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

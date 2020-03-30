@@ -801,18 +801,113 @@ function deleteUser(e) {
 
 function searchByName(e) {
     if (e !== undefined)
-        e.prevenfDefault();
-    message("Поиск по названию в разработке");
+        e.preventDefault();        
+    var dlg = $("<div></div>")
+        .addClass("dialog")
+        .appendTo("body")
+        .dialog({
+            title: "Поиск по названию",
+            close: function () { $(this).remove() },
+            modal: true,
+            closeOnEscape: true,
+            width: "30%",
+            position: { my: "center-15% center", of: window },
+            buttons:
+                [
+                    {
+                        text: "Искать",
+                        click: function () {
+                            var searchText = $("#SearchText").val().trim();
+                            if (searchText == "")
+                                return;
+                            dlg.remove();
+                            window.location.href = "/Note/SearchByName/?searchText=" + searchText;                            
+                        }
+                    },
+                    {
+                        text: "Закрыть",
+                        click: function () {
+                            dlg.remove();
+                        }
+                    }
+                ]
+        })
+        .html('<form id="searchByNameForm"><div class="form-group"><label>Что ищем?</label><input type="text" class="form-control col-md-12 text-box single-line" id="SearchText"/></div></form>');    
 }
 
-function searchByCategoryName() {
+function searchByCategoryName(e) {
     if (e !== undefined)
         e.preventDefault();
-    message("Поиск по названию категории в разработке");
+    var dlg = $("<div></div>")
+        .addClass("dialog")
+        .appendTo("body")
+        .dialog({
+            title: "Поиск по названию категории",
+            close: function () { $(this).remove() },           
+            modal: true,
+            closeOnEscape: true,
+            width: "30%",
+            position: { my: "center-15% center", of: window },
+            buttons:
+                [
+                    {
+                        text: "Искать",
+                        icons: "ui-icon-search",
+                        click: function () {
+                            var searchText = $("#SearchText").val().trim();
+                            if (searchText == "")
+                                return;
+                            dlg.remove();
+                            window.location.href = "/Note/SearchByCategoryName/?categoryName=" + searchText;
+                        }
+                    },
+                    {
+                        text: "Закрыть",
+                        click: function () {
+                            dlg.remove();
+                        }
+                    }
+                ]
+        })
+        .html('<div class="form-group"><label>Что ищем?</label><input type="text" class="form-control col-md-12 text-box single-line" id="SearchText"/></div>');    
+
 }
 
-function searchByDate() {
+function searchByDate(e) {
     if (e !== undefined)
         e.preventDefault();
-    message("Поиск по дате события в разработке");
+    var defaultDate = new Date();
+    var dlg = $("<div></div>")
+        .addClass("dialog")
+        .appendTo("body")
+        .dialog({
+            title: "Поиск по дате",
+            close: function () { $(this).remove() },
+            modal: true,
+            closeOnEscape: true,
+            width: "30%",
+            position: { my: "center-15% center", of: window },
+            buttons:
+                [
+                    {
+                        text: "Искать",
+                        click: function () {
+                            var searchDate = new Date($("#SearchDate").val());
+                            if (searchDate == "")
+                                return;
+                            dlg.remove();
+                            window.location.href = "/Note/SearchByDate/?date=" + searchDate.toISOString();
+                        }
+                    },
+                    {
+                        text: "Закрыть",
+                        click: function () {
+                            dlg.remove();
+                        }
+                    }
+                ]
+        })
+        .html('<form><div class="form-group"><label>Что ищем?</label><input type="date" class="form-control col-md-12 text-box single-line" id="SearchDate" value="' +
+            defaultDate.toISOString() + '"/></div ></form >');    
+
 }

@@ -56,13 +56,56 @@ namespace Notes.App.Controllers
                 return PartialView("PartialError",error);
             }
         }
-        [HttpGet]
-        public ActionResult Search(string searchText)
+        
+        public ActionResult SearchByName(string searchText)
         {
-            List<NoteDTO> notes = _bl.Notes.GetList().Where(n => n.Title.Contains(searchText)).ToList();
-            JsonResult json = new JsonResult();
-            json.Data = notes;
-            return json;
+            NoteSearchByNameViewModel model = new NoteSearchByNameViewModel()
+            {
+                Categories = _bl.Categories.GetList()
+            };
+            if (!String.IsNullOrWhiteSpace(searchText))
+            {
+                model.SearchText = searchText;
+                model.Notes = _bl.Notes.SearchByName(searchText);
+                return View(model);
+            }
+            else
+            {
+                model.SearchText = searchText;
+                model.Notes = new List<NoteDTO>();
+                return View(model);
+            }
+        }
+
+        public ActionResult SearchByCategoryName(string categoryName)
+        {
+            NoteSearchByCategoryNameViewModel model = new NoteSearchByCategoryNameViewModel()
+            {
+                Categories = _bl.Categories.GetList()
+            };
+            if (!String.IsNullOrWhiteSpace(categoryName))
+            {
+                model.CategoryName = categoryName;
+                model.Notes = _bl.Notes.SearchByCategoryName(categoryName);
+                return View(model);
+            }
+            else
+            {         
+                model.CategoryName = categoryName;
+                model.Notes = new List<NoteDTO>();
+                return View(model);
+            }
+        }
+
+        public ActionResult SearchByDate(DateTime date)
+        {
+            NoteSearchByDateViewModel model = new NoteSearchByDateViewModel()
+            {
+                SearchDate = date,
+                Categories = _bl.Categories.GetList()
+            };            
+            model.Notes = _bl.Notes.SearchByDate(date);
+            return View(model);            
         }
 
         public ActionResult ByCategory(int id)
